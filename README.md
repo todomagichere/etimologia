@@ -2,7 +2,7 @@
 
 Juego diario gratuito para descubrir el origen de las palabras. En cada partida debes identificar el significado de las raíces que forman la palabra propuesta; al terminar, la aplicación muestra una definición breve, explica su formación y enlaza a la entrada correspondiente del Diccionario de la lengua española (DLE).
 
-La aplicación está pensada para jugarse en español y funciona completamente en el navegador. No requiere cuentas, servidor, base de datos ni dependencias de npm.
+La aplicación está pensada para jugarse en español y funciona completamente en el navegador. No requiere cuentas, base de datos ni dependencias de npm. El entorno local se ejecuta con Docker.
 
 ## Características
 
@@ -15,17 +15,42 @@ La aplicación está pensada para jugarse en español y funciona completamente e
 - Tema automático según el sistema, con selector manual claro/oscuro.
 - Metadatos SEO y GEO: datos estructurados, `robots.txt`, `sitemap.xml`, `llms.txt`, manifest y tarjeta social WebP.
 
-## Ejecutar en local
+## Ejecutar en local con Docker
 
-Solo necesitas un servidor HTTP estático. Desde la raíz del proyecto:
+### Requisitos
+
+- Docker Engine o Docker Desktop.
+- Docker Compose v2.
+
+Desde la raíz del proyecto, construye e inicia el servicio:
 
 ```sh
-python3 -m http.server 8080
+docker compose up --build
 ```
 
-Abre después [http://localhost:8080](http://localhost:8080) en el navegador.
+Abre [http://localhost:8080](http://localhost:8080) en el navegador.
 
-No abras `index.html` directamente: servir la carpeta por HTTP permite cargar correctamente los recursos, el favicon y las rutas absolutas.
+El contenedor sirve los archivos estáticos con Nginx. La carpeta del proyecto se monta en modo lectura, por lo que los cambios en HTML, CSS o JavaScript se reflejan al recargar el navegador sin reconstruir la imagen.
+
+Para ejecutarlo en segundo plano:
+
+```sh
+docker compose up --build -d
+```
+
+Para detenerlo:
+
+```sh
+docker compose down
+```
+
+Si el puerto 8080 ya está ocupado, usa otro, por ejemplo:
+
+```sh
+PORT=8081 docker compose up --build
+```
+
+No abras `index.html` directamente: el contenedor debe servir la carpeta por HTTP para cargar correctamente los recursos, el favicon y las rutas absolutas.
 
 ## Estructura
 
@@ -34,6 +59,9 @@ No abras `index.html` directamente: servir la carpeta por HTTP permite cargar co
 ├── app.js              Lógica del juego, tema, estadísticas y compartición
 ├── word-bank.js        Banco de palabras y datos etimológicos
 ├── styles.css          Diseño adaptable y temas claro/oscuro
+├── Dockerfile           Imagen Nginx para el entorno local
+├── compose.yaml         Servicio local con Docker Compose
+├── .dockerignore        Archivos excluidos de la imagen
 ├── favicon.ico         Icono del sitio
 ├── social-card.webp    Imagen para previsualizaciones sociales
 ├── site.webmanifest    Datos de instalación web
