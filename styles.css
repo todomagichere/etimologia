@@ -37,13 +37,14 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outlin
 }
 .brand { display: inline-flex; align-items: center; gap: .45rem; color: var(--ink); font-family: Fraunces, serif; font-size: 1.35rem; font-weight: 700; letter-spacing: -.06em; text-decoration: none; }
 .brand-mark { display: grid; width: 1.6rem; height: 1.6rem; place-items: center; color: var(--paper); background: var(--ink); border-radius: 50%; font-family: Fraunces, serif; font-size: 1.25rem; }
-.brand-tagline { padding-left: .55rem; border-left: 1px solid var(--line); color: var(--muted); font-family: Fraunces, serif; font-size: .8rem; font-weight: 600; letter-spacing: -.025em; }
+.brand-tagline { margin: 0; padding-left: .55rem; border-left: 1px solid var(--line); color: var(--muted); font-family: Fraunces, serif; font-size: .8rem; font-weight: 600; letter-spacing: -.025em; }
 .topbar-actions { display: flex; gap: .45rem; }
 .icon-button { display: grid; width: 2.25rem; height: 2.25rem; padding: 0; cursor: pointer; color: var(--ink); background: transparent; border: 1px solid var(--ink); border-radius: 50%; font-weight: 800; place-items: center; }
 .icon-button:hover { color: var(--paper); background: var(--ink); }
 .icon-button svg { width: 1.05rem; height: 1.05rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 2; }
 
 .game { padding: 2.8rem 0 2rem; text-align: center; }
+.daily-heading { margin: 0 0 .65rem; color: var(--muted); font-family: Fraunces, serif; font-size: .95rem; font-weight: 600; letter-spacing: -.025em; }
 .site-footer { display: flex; justify-content: center; gap: .7rem; width: min(100%, 1100px); margin: 0 auto; padding: 0 1.25rem 2rem; }
 .footer-share { display: grid; width: 1.8rem; height: 1.8rem; padding: 0; place-items: center; cursor: pointer; color: var(--muted); background: transparent; border: 0; }
 .footer-share svg { width: 1.05rem; height: 1.05rem; fill: currentColor; }

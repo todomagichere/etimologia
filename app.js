@@ -98,6 +98,8 @@ const dailyIndex = Math.floor(Date.UTC(today.getFullYear(), today.getMonth(), to
 let challenge = challenges[dailyIndex];
 let score = 0;
 let rootAnswers = [];
+let rootSelections = [];
+let dailyProgress = null;
 
 const $ = (selector) => document.querySelector(selector);
 const result = $("#result");
@@ -105,6 +107,7 @@ const rootsGrid = $("#roots-grid");
 const hintButton = $("#hint-button");
 const definition = $("#definition");
 const statsKey = "etimologia-es-stats";
+const dailyProgressKey = "etimologia-es-daily-progress";
 const themeKey = "etimologia-es-theme";
 
 function readStats() {
@@ -118,6 +121,49 @@ function readStats() {
 
 function dateKey(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function readDailyProgress() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(dailyProgressKey) || "null");
+    if (!stored || stored.date !== dateKey(today) || stored.word !== challenge.word || !Array.isArray(stored.selections)) return null;
+    return { selections: stored.selections, hintShown: Boolean(stored.hintShown), completed: Boolean(stored.completed) };
+  } catch {
+    return null;
+  }
+}
+
+function persistDailyProgress() {
+  dailyProgress = {
+    date: dateKey(today),
+    word: challenge.word,
+    selections: rootSelections.map((selection) => selection || null),
+    hintShown: Boolean(dailyProgress?.hintShown),
+    completed: Boolean(dailyProgress?.completed)
+  };
+  localStorage.setItem(dailyProgressKey, JSON.stringify(dailyProgress));
+}
+
+function restoreDailyProgress() {
+  const stored = readDailyProgress();
+  if (!stored) return;
+  dailyProgress = stored;
+  rootSelections = challenge.parts.map((part, index) => (
+    typeof stored.selections[index] === "string" && part.options.includes(stored.selections[index]) ? stored.selections[index] : undefined
+  ));
+  rootAnswers = rootSelections.map((selection, index) => (
+    selection === undefined ? undefined : selection === challenge.parts[index].meaning
+  ));
+  score = rootAnswers.filter(Boolean).length;
+  if (stored.hintShown) {
+    definition.hidden = false;
+    definition.classList.add("is-revealed");
+    hintButton.hidden = true;
+  }
+  renderRoots();
+  if (rootAnswers.filter((answer) => answer !== undefined).length === challenge.parts.length) {
+    window.setTimeout(() => showResult(), 0);
+  }
 }
 
 function renderActivity(stats) {
@@ -185,6 +231,8 @@ function setChallenge(nextChallenge) {
   challenge = nextChallenge;
   score = 0;
   rootAnswers = [];
+  rootSelections = [];
+  dailyProgress = null;
   if (result.open) result.close();
   $("#share-status").textContent = "";
   definition.textContent = challenge.definition;
@@ -226,6 +274,7 @@ function renderRoots() {
       button.addEventListener("click", () => chooseAnswer(rootIndex, option, button));
       answersEl.append(button);
     });
+    if (rootSelections[rootIndex] !== undefined) applyAnswerState(card, part, rootSelections[rootIndex]);
     card.addEventListener("pointerenter", () => highlightWordPart(rootIndex));
     card.addEventListener("pointerleave", clearWordHighlight);
     card.addEventListener("focusin", () => highlightWordPart(rootIndex));
@@ -244,22 +293,29 @@ function clearWordHighlight() {
   document.querySelectorAll(".word-part").forEach((wordPart) => wordPart.classList.remove("is-highlighted"));
 }
 
+function applyAnswerState(card, part, selectedOption) {
+  const correct = selectedOption === part.meaning;
+  card.querySelectorAll(".answer").forEach((button) => {
+    button.disabled = true;
+    if (button.dataset.option === part.meaning) button.classList.add("reveal");
+    if (button.dataset.option === selectedOption) button.classList.add(correct ? "correct" : "wrong");
+  });
+  card.querySelector(".feedback").innerHTML = correct
+    ? `<strong>¡Exacto!</strong> «${part.text}» significa «${part.meaning}».`
+    : `Casi. «${part.text}» significa «${part.meaning}».`;
+}
+
 function chooseAnswer(rootIndex, option, selectedButton) {
   if (rootAnswers[rootIndex] !== undefined) return;
   const part = challenge.parts[rootIndex];
   const correct = option === part.meaning;
   rootAnswers[rootIndex] = correct;
+  rootSelections[rootIndex] = option;
   if (correct) score += 1;
+  persistDailyProgress();
 
   const card = selectedButton.closest(".root-card");
-  card.querySelectorAll(".answer").forEach((button) => {
-    button.disabled = true;
-    if (button.dataset.option === part.meaning) button.classList.add("reveal");
-  });
-  selectedButton.classList.add(correct ? "correct" : "wrong");
-  card.querySelector(".feedback").innerHTML = correct
-    ? `<strong>¡Exacto!</strong> «${part.text}» significa «${part.meaning}».`
-    : `Casi. «${part.text}» significa «${part.meaning}».`;
+  applyAnswerState(card, part, option);
   const completedRoots = rootAnswers.filter((answer) => answer !== undefined).length;
   if (completedRoots === challenge.parts.length) {
     window.setTimeout(() => {
@@ -278,7 +334,12 @@ function showResult() {
   raeLink.textContent = `Ver «${challenge.word}» en el DLE`;
   $("#result-copy").textContent = `${challenge.word} se forma con ${explanation}.`;
   if (!result.open) result.showModal();
-  recordGame();
+  if (!dailyProgress?.completed) {
+    dailyProgress ??= {};
+    dailyProgress.completed = true;
+    persistDailyProgress();
+    recordGame();
+  }
 }
 
 $("#close-result").addEventListener("click", () => result.close());
@@ -400,6 +461,9 @@ document.querySelectorAll(".footer-share").forEach((button) => button.addEventLi
 hintButton.addEventListener("click", () => {
   if (hintButton.disabled) return;
   hintButton.disabled = true;
+  dailyProgress ??= {};
+  dailyProgress.hintShown = true;
+  persistDailyProgress();
   hintButton.classList.add("is-leaving");
   definition.hidden = false;
   definition.classList.add("is-revealed");
@@ -446,3 +510,4 @@ themeToggle.addEventListener("click", () => {
 
 updateStatsPanel();
 setChallenge(challenge);
+restoreDailyProgress();

@@ -83,7 +83,7 @@
     <main class="shell">
       <header class="topbar">
         <a class="brand" href="#inicio" aria-label="etimologia.es, inicio">
-          <span class="brand-mark">e</span><span class="brand-name">etimologia.es</span><span class="brand-tagline">El origen de las palabras</span>
+          <span class="brand-mark">e</span><span class="brand-name">etimologia.es</span><h1 class="brand-tagline" id="site-heading">El origen de las palabras</h1>
         </a>
         <div class="topbar-actions">
           <button class="icon-button" id="stats-button" aria-label="Ver tus estadísticas" title="Estadísticas">
@@ -94,8 +94,9 @@
         </div>
       </header>
 
-      <section class="game" id="inicio" aria-labelledby="game-heading">
-        <h1 id="word" class="word" aria-label="Palabra del reto"></h1>
+      <section class="game" id="inicio" aria-labelledby="site-heading">
+        <h2 class="daily-heading">Una nueva palabra cada día</h2>
+        <p id="word" class="word" aria-label="Palabra del reto"></p>
         <div class="hint-area">
           <button class="hint-button" id="hint-button" type="button">¿Necesitas una pista?</button>
           <p class="definition" id="definition" hidden></p>
