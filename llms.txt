@@ -8,6 +8,6 @@ El contenido está destinado a aprendizaje y divulgación de etimología. La int
 
 ## Páginas principales
 
-- [Inicio y juego diario](https://etimologia.es/): palabra diaria, raíces, pista, resultado e instrucciones.
-- [Sitemap XML](https://etimologia.es/sitemap.xml): índice de las URL públicas del sitio.
-- [Robots](https://etimologia.es/robots.txt): política de acceso para rastreadores.
+- [Inicio y juego diario](https://todomagichere.github.io/etimologia/): palabra diaria, raíces, pista, resultado e instrucciones.
+- [Sitemap XML](https://todomagichere.github.io/etimologia/sitemap.xml): índice de las URL públicas del sitio.
+- [Robots](https://todomagichere.github.io/etimologia/robots.txt): política de acceso para rastreadores.

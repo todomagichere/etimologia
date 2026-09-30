@@ -288,7 +288,7 @@ function shareCopy() {
 }
 
 function shareUrl(platform, campaign = "resultado") {
-  const url = new URL("https://etimologia.es/");
+  const url = new URL("https://todomagichere.github.io/etimologia/");
   url.searchParams.set("utm_source", platform);
   url.searchParams.set("utm_medium", "social");
   url.searchParams.set("utm_campaign", campaign);

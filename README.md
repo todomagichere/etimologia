@@ -50,6 +50,6 @@ Las definiciones mostradas en la aplicación son resúmenes educativos. El resul
 
 ## Despliegue
 
-Puede publicarse en cualquier alojamiento de archivos estáticos. La configuración SEO usa como URL canónica `https://etimologia.es/`; si se despliega bajo otro dominio, actualiza esa URL en `index.html`, `robots.txt`, `sitemap.xml` y `llms.txt`.
+Puede publicarse en cualquier alojamiento de archivos estáticos. Esta copia está configurada para GitHub Pages en `https://todomagichere.github.io/etimologia/`; si se despliega bajo otro dominio, actualiza esa URL en `index.html`, `app.js`, `robots.txt`, `sitemap.xml` y `llms.txt`.
 
 Tras el despliegue, registra el dominio en Google Search Console y Bing Webmaster Tools para solicitar la indexación.
