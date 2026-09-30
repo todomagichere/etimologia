@@ -16,4 +16,4 @@ Allow: /
 User-agent: PerplexityBot
 Allow: /
 
-Sitemap: https://todomagichere.github.io/etimologia/sitemap.xml
+Sitemap: https://etimologia.es/sitemap.xml
