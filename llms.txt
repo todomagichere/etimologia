@@ -1,0 +1,13 @@
+# etimologia.es
+
+> Juego educativo gratuito en español para descubrir el origen, las raíces y la formación de una palabra cada día.
+
+etimologia.es presenta una palabra diaria y pide identificar el significado de cada una de sus raíces. Tras responder, ofrece una definición breve, explica cómo se forma el término y enlaza a la entrada correspondiente del Diccionario de la lengua española (DLE) de la RAE.
+
+El contenido está destinado a aprendizaje y divulgación de etimología. La interfaz, las instrucciones y el banco de palabras están en español. Las definiciones propias son resúmenes educativos; el enlace al DLE permite contrastarlas con la fuente lexicográfica oficial.
+
+## Páginas principales
+
+- [Inicio y juego diario](https://etimologia.es/): palabra diaria, raíces, pista, resultado e instrucciones.
+- [Sitemap XML](https://etimologia.es/sitemap.xml): índice de las URL públicas del sitio.
+- [Robots](https://etimologia.es/robots.txt): política de acceso para rastreadores.

@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Descubre cada día el origen de una palabra, sus raíces y cómo se forma. Un juego gratuito de etimología en español." />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1" />
+    <meta name="author" content="etimologia.es" />
+    <meta name="theme-color" content="#f7f3e7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#20221e" media="(prefers-color-scheme: dark)" />
+    <link rel="canonical" href="https://etimologia.es/" />
+    <link rel="alternate" type="text/markdown" href="https://etimologia.es/llms.txt" title="Resumen para asistentes de IA" />
+    <link rel="describedby" type="text/markdown" href="https://etimologia.es/llms.txt" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="etimologia.es" />
+    <meta property="og:title" content="etimologia.es · El origen de las palabras" />
+    <meta property="og:description" content="Descubre cada día el origen de una palabra, sus raíces y cómo se forma." />
+    <meta property="og:url" content="https://etimologia.es/" />
+    <meta property="og:image" content="https://etimologia.es/social-card.webp" />
+    <meta property="og:image:secure_url" content="https://etimologia.es/social-card.webp" />
+    <meta property="og:image:type" content="image/webp" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="etimologia.es, juego diario sobre el origen de las palabras" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="etimologia.es · El origen de las palabras" />
+    <meta name="twitter:description" content="Un juego diario de etimología en español." />
+    <meta name="twitter:image" content="https://etimologia.es/social-card.webp" />
+    <meta name="twitter:image:alt" content="etimologia.es, juego diario sobre el origen de las palabras" />
+    <title>Etimología: el origen de las palabras | etimologia.es</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-N62TCXSJ');</script>
+    <!-- End Google Tag Manager -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://etimologia.es/#website",
+            "url": "https://etimologia.es/",
+            "name": "etimologia.es",
+            "description": "Juego diario para descubrir el origen, las raíces y la formación de palabras en español.",
+            "inLanguage": "es-ES"
+          },
+          {
+            "@type": "WebApplication",
+            "@id": "https://etimologia.es/#app",
+            "name": "etimologia.es",
+            "url": "https://etimologia.es/",
+            "applicationCategory": "EducationalApplication",
+            "applicationSubCategory": "Juego de etimología",
+            "operatingSystem": "Web",
+            "isAccessibleForFree": true,
+            "inLanguage": "es-ES",
+            "description": "Aplicación educativa gratuita para conocer el origen y la etimología de una palabra diaria.",
+            "keywords": "etimología, raíces de palabras, origen de las palabras, idioma español, juego de palabras"
+          }
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N62TCXSJ"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <main class="shell">
+      <header class="topbar">
+        <a class="brand" href="#inicio" aria-label="etimologia.es, inicio">
+          <span class="brand-mark">e</span><span class="brand-name">etimologia.es</span><span class="brand-tagline">El origen de las palabras</span>
+        </a>
+        <div class="topbar-actions">
+          <button class="icon-button" id="stats-button" aria-label="Ver tus estadísticas" title="Estadísticas">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19V10M12 19V5M19 19v-7" /></svg>
+          </button>
+          <button class="icon-button" id="theme-toggle" aria-label="Cambiar tema" title="Cambiar tema"><span aria-hidden="true">◐</span></button>
+          <button class="icon-button" id="how-to-play" aria-label="Cómo jugar" title="Ayuda">?</button>
+        </div>
+      </header>
+
+      <section class="game" id="inicio" aria-labelledby="game-heading">
+        <h1 id="word" class="word" aria-label="Palabra del reto"></h1>
+        <div class="hint-area">
+          <button class="hint-button" id="hint-button" type="button">¿Necesitas una pista?</button>
+          <p class="definition" id="definition" hidden></p>
+        </div>
+
+        <div class="reveal-stage" id="reveal-stage">
+          <div class="question-panel">
+            <div class="roots-grid" id="roots-grid" aria-live="polite"></div>
+          </div>
+
+          <dialog class="result result-modal" id="result" aria-labelledby="result-title">
+            <button class="dialog-close" id="close-result" aria-label="Cerrar resultado">×</button>
+            <header class="result-header">
+              <p class="result-kicker">RETO COMPLETADO</p>
+              <h2 id="result-title"></h2>
+              <p class="result-score-label">Tu puntuación</p>
+              <div class="score-badge"><span id="score">0</span><span aria-hidden="true"> / </span><span id="max-score">2</span><small> aciertos</small></div>
+            </header>
+            <div class="result-details">
+              <section class="result-detail">
+                <p class="result-section-label">DEFINICIÓN</p>
+                <p class="result-definition" id="result-definition"></p>
+                <a class="rae-link" id="rae-link" href="https://dle.rae.es/" target="_blank" rel="noopener noreferrer">Consultar en el DLE</a>
+              </section>
+              <section class="result-detail">
+                <p class="result-section-label">CÓMO SE FORMA</p>
+                <p id="result-copy"></p>
+              </section>
+            </div>
+            <section class="result-share" aria-label="Compartir resultado">
+              <p class="result-share-label">Reta a alguien a superarte</p>
+              <div class="share-options" id="share-options" aria-label="Elige dónde compartir el resultado">
+              <button type="button" class="share-option share-whatsapp" data-platform="whatsapp" aria-label="Compartir por WhatsApp" title="WhatsApp">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2a8.6 8.6 0 0 0-7.4 13L3.4 21l4.9-1.2A8.6 8.6 0 1 0 12 3.2Zm0 15.6a7 7 0 0 1-3.6-1l-.3-.2-2.9.7.8-2.8-.2-.3A7 7 0 1 1 12 18.8Zm3.8-5.2c-.2-.1-1.3-.6-1.5-.7s-.4-.1-.5.1-.6.7-.7.8-.3.2-.5.1a5.8 5.8 0 0 1-1.7-1.1 6.2 6.2 0 0 1-1.2-1.6c-.1-.2 0-.4.1-.5l.3-.4.2-.4c.1-.1 0-.3 0-.4s-.5-1.2-.7-1.6c-.2-.4-.4-.3-.5-.3h-.5c-.2 0-.4.1-.6.3s-.8.8-.8 1.9.8 2.1.9 2.2a8 8 0 0 0 3.1 3c.4.2.7.3 1 .4.4.1.8.1 1.1.1.3 0 1.3-.5 1.5-1 .2-.5.2-1 .2-1.1 0-.1-.2-.2-.4-.3Z"/></svg>
+              </button>
+              <button type="button" class="share-option share-telegram" data-platform="telegram" aria-label="Compartir por Telegram" title="Telegram">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m20.5 4.1-17 6.6c-1.2.5-1.2 1.2-.2 1.5l4.4 1.4 1.7 5.1c.2.6.1.8.8.8.5 0 .8-.2 1.1-.5l2.1-2 4.4 3.3c.8.4 1.4.2 1.6-.8l2.9-13.6c.3-1.2-.5-1.8-1.4-1.4Zm-12.1 9 9.9-6.2c.5-.3.9-.1.5.3l-8.4 7.6-.3 3.2-1.7-5Z"/></svg>
+              </button>
+              <button type="button" class="share-option share-linkedin" data-platform="linkedin" aria-label="Compartir en LinkedIn" title="LinkedIn">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.1 3.5a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2ZM3.7 8h2.8v12H3.7V8Zm4.6 0H11v1.6h.1c.4-.8 1.5-2 3.2-2 3.4 0 4 2.2 4 5.2V20h-2.8v-6.4c0-1.5 0-3.5-2.1-3.5s-2.5 1.7-2.5 3.4V20H8.2V8Z"/></svg>
+              </button>
+              <button type="button" class="share-option share-threads" data-platform="threads" aria-label="Compartir en Threads" title="Threads">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.1 3.2c-4.2 0-7.1 2.6-7.1 6.2 0 2.7 1.7 4.8 4.6 5.6.3.1.6 0 .7-.3l.3-1.1c.1-.3-.1-.6-.4-.7-1.5-.5-2.4-1.6-2.4-3.2 0-2 1.7-3.5 4.2-3.5 2.6 0 4.1 1.4 4.4 3.7-1-.2-2.1-.3-3.2-.2-2.6.1-4.3 1.4-4.3 3.5 0 2 1.6 3.4 3.9 3.4 2.5 0 4.1-1.4 4.8-3.3.7.4 1.3.9 1.8 1.5.2.2.5.2.8 0l.8-.7c.2-.2.2-.5 0-.8-.8-.9-1.9-1.7-3.3-2.2-.1-5-2.5-8-7.6-8Zm.8 10.2c.8 0 1.7.1 2.6.3-.4 1.1-1.3 1.7-2.5 1.7-.7 0-1.2-.4-1.2-1 0-.6.4-1 1.1-1Z"/></svg>
+              </button>
+              <button type="button" class="share-option share-x" data-platform="x" aria-label="Compartir en X" title="X">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 3h2.8l-6.1 7 7.2 11h-5.6l-4.4-6.7L7 21H4.2l6.5-7.5L3.8 3h5.8l4 6.1L18.9 3Zm-1 16.2h1.6L8.7 4.7H7l10.9 14.5Z"/></svg>
+              </button>
+              <button type="button" class="share-option share-facebook" data-platform="facebook" aria-label="Compartir en Facebook" title="Facebook">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.7 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5h1.7V3.9c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1V10H6.9v3h2.7v8h4.1Z"/></svg>
+              </button>
+              <button type="button" class="share-option share-native" data-platform="native" aria-label="Más opciones para compartir o copiar enlace" title="Más opciones">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0-11 3.8 3.8M12 3 8.2 6.8M5 12.5v6.2c0 .7.6 1.3 1.3 1.3h11.4c.7 0 1.3-.6 1.3-1.3v-6.2"/></svg>
+              </button>
+              </div>
+              <p class="share-status" id="share-status" aria-live="polite"></p>
+            </section>
+          </dialog>
+        </div>
+
+      </section>
+    </main>
+
+    <footer class="site-footer" aria-label="Compartir etimologia.es">
+      <button type="button" class="footer-share share-whatsapp" data-footer-platform="whatsapp" aria-label="Compartir etimologia.es por WhatsApp" title="Compartir por WhatsApp">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2a8.6 8.6 0 0 0-7.4 13L3.4 21l4.9-1.2A8.6 8.6 0 1 0 12 3.2Zm0 15.6a7 7 0 0 1-3.6-1l-.3-.2-2.9.7.8-2.8-.2-.3A7 7 0 1 1 12 18.8Zm3.8-5.2c-.2-.1-1.3-.6-1.5-.7s-.4-.1-.5.1-.6.7-.7.8-.3.2-.5.1a5.8 5.8 0 0 1-1.7-1.1 6.2 6.2 0 0 1-1.2-1.6c-.1-.2 0-.4.1-.5l.3-.4.2-.4c.1-.1 0-.3 0-.4s-.5-1.2-.7-1.6c-.2-.4-.4-.3-.5-.3h-.5c-.2 0-.4.1-.6.3s-.8.8-.8 1.9.8 2.1.9 2.2a8 8 0 0 0 3.1 3c.4.2.7.3 1 .4.4.1.8.1 1.1.1.3 0 1.3-.5 1.5-1 .2-.5.2-1 .2-1.1 0-.1-.2-.2-.4-.3Z"/></svg>
+      </button>
+      <button type="button" class="footer-share share-telegram" data-footer-platform="telegram" aria-label="Compartir etimologia.es por Telegram" title="Compartir por Telegram">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m20.5 4.1-17 6.6c-1.2.5-1.2 1.2-.2 1.5l4.4 1.4 1.7 5.1c.2.6.1.8.8.8.5 0 .8-.2 1.1-.5l2.1-2 4.4 3.3c.8.4 1.4.2 1.6-.8l2.9-13.6c.3-1.2-.5-1.8-1.4-1.4Zm-12.1 9 9.9-6.2c.5-.3.9-.1.5.3l-8.4 7.6-.3 3.2-1.7-5Z"/></svg>
+      </button>
+      <button type="button" class="footer-share share-linkedin" data-footer-platform="linkedin" aria-label="Compartir etimologia.es en LinkedIn" title="Compartir en LinkedIn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.1 3.5a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2ZM3.7 8h2.8v12H3.7V8Zm4.6 0H11v1.6h.1c.4-.8 1.5-2 3.2-2 3.4 0 4 2.2 4 5.2V20h-2.8v-6.4c0-1.5 0-3.5-2.1-3.5s-2.5 1.7-2.5 3.4V20H8.2V8Z"/></svg>
+      </button>
+      <button type="button" class="footer-share share-threads" data-footer-platform="threads" aria-label="Compartir etimologia.es en Threads" title="Compartir en Threads">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.1 3.2c-4.2 0-7.1 2.6-7.1 6.2 0 2.7 1.7 4.8 4.6 5.6.3.1.6 0 .7-.3l.3-1.1c.1-.3-.1-.6-.4-.7-1.5-.5-2.4-1.6-2.4-3.2 0-2 1.7-3.5 4.2-3.5 2.6 0 4.1 1.4 4.4 3.7-1-.2-2.1-.3-3.2-.2-2.6.1-4.3 1.4-4.3 3.5 0 2 1.6 3.4 3.9 3.4 2.5 0 4.1-1.4 4.8-3.3.7.4 1.3.9 1.8 1.5.2.2.5.2.8 0l.8-.7c.2-.2.2-.5 0-.8-.8-.9-1.9-1.7-3.3-2.2-.1-5-2.5-8-7.6-8Zm.8 10.2c.8 0 1.7.1 2.6.3-.4 1.1-1.3 1.7-2.5 1.7-.7 0-1.2-.4-1.2-1 0-.6.4-1 1.1-1Z"/></svg>
+      </button>
+      <button type="button" class="footer-share share-x" data-footer-platform="x" aria-label="Compartir etimologia.es en X" title="Compartir en X">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 3h2.8l-6.1 7 7.2 11h-5.6l-4.4-6.7L7 21H4.2l6.5-7.5L3.8 3h5.8l4 6.1L18.9 3Zm-1 16.2h1.6L8.7 4.7H7l10.9 14.5Z"/></svg>
+      </button>
+      <button type="button" class="footer-share share-facebook" data-footer-platform="facebook" aria-label="Compartir etimologia.es en Facebook" title="Compartir en Facebook">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.7 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5h1.7V3.9c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1V10H6.9v3h2.7v8h4.1Z"/></svg>
+      </button>
+      <button type="button" class="footer-share share-native" data-footer-platform="native" aria-label="Más opciones para compartir etimologia.es" title="Más opciones">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0-11 3.8 3.8M12 3 8.2 6.8M5 12.5v6.2c0 .7.6 1.3 1.3 1.3h11.4c.7 0 1.3-.6 1.3-1.3v-6.2"/></svg>
+      </button>
+      <span class="sr-only" id="footer-share-status" aria-live="polite"></span>
+    </footer>
+
+    <dialog id="instructions">
+      <button class="dialog-close" id="close-instructions" aria-label="Cerrar">×</button>
+      <p class="eyebrow">CÓMO JUGAR</p>
+      <h2>Las palabras tienen historia.</h2>
+      <p class="help-story">Muchas palabras son pequeñas cápsulas de viaje: pasan del griego o del latín al español y conservan pistas de su significado original. Aquí las abrimos por sus raíces.</p>
+      <ol class="help-steps">
+        <li>Observa la palabra y las raíces que la forman.</li>
+        <li>Elige qué significa cada raíz.</li>
+        <li>Descubre la definición y cómo se construyó la palabra.</li>
+      </ol>
+      <button class="primary-button" id="start-button">Empezar</button>
+    </dialog>
+
+    <dialog id="stats-dialog" aria-labelledby="stats-title">
+      <button class="dialog-close" id="close-stats" aria-label="Cerrar estadísticas">×</button>
+      <p class="eyebrow">TU PROGRESO</p>
+      <h2 id="stats-title">Estadísticas</h2>
+      <div class="stats-grid">
+        <div class="stat"><strong id="stats-played">0</strong><span>partidas</span></div>
+        <div class="stat"><strong id="stats-correct">0</strong><span>aciertos</span></div>
+        <div class="stat"><strong id="stats-average">0%</strong><span>media</span></div>
+        <div class="stat"><strong id="stats-streak">0</strong><span>racha de días</span></div>
+      </div>
+      <section class="activity" aria-labelledby="activity-title">
+        <div class="activity-heading"><span id="activity-title">ÚLTIMOS 7 DÍAS</span><span id="stats-active-days"></span></div>
+        <div class="activity-chart" id="stats-chart" role="img" aria-label="Actividad de los últimos siete días"></div>
+        <p class="chart-key">La altura indica los aciertos de cada partida.</p>
+      </section>
+      <p class="stats-note">Estas estadísticas se guardan solo en este navegador.</p>
+    </dialog>
+
+    <noscript>
+      <section>
+        <h1>Etimología: el origen de las palabras</h1>
+        <p>etimologia.es es un juego educativo gratuito en español. Cada día propone una palabra y permite descubrir de qué raíces procede y cómo se forma.</p>
+        <p>Activa JavaScript para jugar al reto diario y consultar la explicación etimológica.</p>
+      </section>
+    </noscript>
+    <script src="word-bank.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

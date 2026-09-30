@@ -1,0 +1,17 @@
+{
+  "name": "etimologia.es · El origen de las palabras",
+  "short_name": "etimologia.es",
+  "description": "Juego diario para descubrir el origen de las palabras.",
+  "lang": "es-ES",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f3e7",
+  "theme_color": "#20221e",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 32x32 48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}

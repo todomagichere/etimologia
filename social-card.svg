@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">etimologia.es · El origen de las palabras</title>
+  <desc id="description">Juego diario de etimología en español</desc>
+  <rect width="1200" height="630" fill="#20221e"/>
+  <rect x="72" y="70" width="1056" height="490" rx="12" fill="#f7f3e7"/>
+  <circle cx="155" cy="153" r="42" fill="#20221e"/>
+  <text x="155" y="170" text-anchor="middle" fill="#f7f3e7" font-family="Georgia, serif" font-size="62" font-weight="700">e</text>
+  <text x="218" y="165" fill="#20221e" font-family="Georgia, serif" font-size="46" font-weight="700">etimologia.es</text>
+  <text x="156" y="275" fill="#20221e" font-family="Georgia, serif" font-size="72" font-weight="700">biblioteca</text>
+  <line x1="157" y1="310" x2="1044" y2="310" stroke="#d8604f" stroke-width="4"/>
+  <text x="158" y="386" fill="#20221e" font-family="Arial, sans-serif" font-size="31" font-weight="700">biblio</text>
+  <text x="158" y="428" fill="#66645d" font-family="Arial, sans-serif" font-size="26">Del griego βιβλίον · libro</text>
+  <text x="622" y="386" fill="#20221e" font-family="Arial, sans-serif" font-size="31" font-weight="700">teca</text>
+  <text x="622" y="428" fill="#66645d" font-family="Arial, sans-serif" font-size="26">Del griego θήκη · depósito</text>
+  <text x="157" y="511" fill="#d8604f" font-family="Arial, sans-serif" font-size="25" font-weight="700" letter-spacing="2">EL ORIGEN DE LAS PALABRAS</text>
+</svg>
