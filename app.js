@@ -1,4 +1,4 @@
-const challenges = [
+let challenges = [
   {
     word: "telemetría",
     definition: "Medición a distancia de magnitudes físicas.",
@@ -92,6 +92,11 @@ const generatedChallenges = technicalRoots.flatMap(([form, text, meaning, origin
 )).filter(({ word }) => !existingWords.has(word)).slice(0, 396);
 
 challenges.push(...window.createWordBank(challenges.map(({ word }) => word)));
+
+// Esta defensa también cubre los retos escritos directamente en este archivo.
+// Una palabra sin entrada contrastada en el DLE no llega a formar parte del ciclo diario.
+const manuallyVerifiedWords = new Set(["telemetría", "microscopio", "biblioteca", "aeropuerto"]);
+challenges = challenges.filter(({ word }) => manuallyVerifiedWords.has(word) || window.isRaeVerifiedWord?.(word));
 
 const today = new Date();
 const dailyIndex = Math.floor(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) / 86400000) % challenges.length;
