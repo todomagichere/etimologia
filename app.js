@@ -109,8 +109,6 @@ let dailyProgress = null;
 const $ = (selector) => document.querySelector(selector);
 const result = $("#result");
 const rootsGrid = $("#roots-grid");
-const hintButton = $("#hint-button");
-const definition = $("#definition");
 const statsKey = "etimologia-es-stats";
 const dailyProgressKey = "etimologia-es-daily-progress";
 const themeKey = "etimologia-es-theme";
@@ -160,11 +158,6 @@ function restoreDailyProgress() {
     selection === undefined ? undefined : selection === challenge.parts[index].meaning
   ));
   score = rootAnswers.filter(Boolean).length;
-  if (stored.hintShown) {
-    definition.hidden = false;
-    definition.classList.add("is-revealed");
-    hintButton.hidden = true;
-  }
   renderRoots();
   if (rootAnswers.filter((answer) => answer !== undefined).length === challenge.parts.length) {
     window.setTimeout(() => showResult(), 0);
@@ -240,13 +233,6 @@ function setChallenge(nextChallenge) {
   dailyProgress = null;
   if (result.open) result.close();
   $("#share-status").textContent = "";
-  definition.textContent = challenge.definition;
-  definition.hidden = true;
-  definition.classList.remove("is-revealed");
-  hintButton.hidden = false;
-  hintButton.disabled = false;
-  hintButton.classList.remove("is-leaving");
-  hintButton.textContent = "¿Necesitas una pista?";
   $("#max-score").textContent = challenge.parts.length;
   renderRoots();
 }
@@ -462,18 +448,6 @@ document.querySelectorAll(".footer-share").forEach((button) => button.addEventLi
     }
   }
 }));
-
-hintButton.addEventListener("click", () => {
-  if (hintButton.disabled) return;
-  hintButton.disabled = true;
-  dailyProgress ??= {};
-  dailyProgress.hintShown = true;
-  persistDailyProgress();
-  hintButton.classList.add("is-leaving");
-  definition.hidden = false;
-  definition.classList.add("is-revealed");
-  window.setTimeout(() => { hintButton.hidden = true; }, 300);
-});
 
 const instructions = $("#instructions");
 $("#how-to-play").addEventListener("click", () => instructions.showModal());

@@ -61,14 +61,6 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outlin
 .word-part.active { color: var(--accent); text-shadow: 1px 1px 0 rgb(32 34 30 / .12); }
 .word-part.is-highlighted { color: var(--accent); text-shadow: 1px 1px 0 rgb(32 34 30 / .12); }
 .word .separator { display: inline-block; margin: 0 .08em; color: var(--muted); font-weight: 600; }
-.hint-area { display: grid; min-height: 2.2rem; margin-top: 1rem; place-items: center; }
-.hint-button { grid-area: 1 / 1; padding: .45rem .7rem; cursor: pointer; color: var(--muted); background: transparent; border: 1px dashed var(--line); border-radius: 99px; font-size: .76rem; font-weight: 800; transition: opacity .3s ease, transform .3s ease; }
-.hint-button.is-leaving { pointer-events: none; opacity: 0; transform: translateY(-.25rem); }
-.hint-button:hover { color: var(--accent-deep); border-color: var(--accent); }
-.definition { grid-area: 1 / 1; width: min(100%, 31rem); margin: 0; color: var(--muted); font-size: .93rem; line-height: 1.55; }
-.definition.is-revealed { animation: hint-arrival .32s ease both; }
-@keyframes hint-arrival { from { opacity: 0; transform: translateY(-.3rem); } to { opacity: 1; transform: translateY(0); } }
-
 .reveal-stage { margin-top: 2.5rem; }
 .question-panel { min-width: 0; }
 .roots-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.35rem; }
