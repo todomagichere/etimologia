@@ -98,8 +98,28 @@ challenges.push(...window.createWordBank(challenges.map(({ word }) => word)));
 const manuallyVerifiedWords = new Set(["telemetría", "microscopio", "biblioteca", "aeropuerto"]);
 challenges = challenges.filter(({ word }) => manuallyVerifiedWords.has(word) || window.isRaeVerifiedWord?.(word));
 
+// Orden editorial estable: evita bloques alfabéticos sin que cada usuario
+// reciba una palabra distinta en la misma fecha.
+let shuffleSeed = 0x4554494d;
+for (let index = challenges.length - 1; index > 0; index -= 1) {
+  shuffleSeed = (shuffleSeed * 1664525 + 1013904223) >>> 0;
+  const swapIndex = shuffleSeed % (index + 1);
+  [challenges[index], challenges[swapIndex]] = [challenges[swapIndex], challenges[index]];
+}
+
 const today = new Date();
-const dailyIndex = Math.floor(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) / 86400000) % challenges.length;
+let dailyIndex = Math.floor(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) / 86400000) % challenges.length;
+const isLocalPreview = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+
+if (isLocalPreview) {
+  const previewIndexKey = "etimologia-es-local-preview-index";
+  const previousIndex = Number(sessionStorage.getItem(previewIndexKey));
+  do {
+    dailyIndex = Math.floor(Math.random() * challenges.length);
+  } while (challenges.length > 1 && dailyIndex === previousIndex);
+  sessionStorage.setItem(previewIndexKey, String(dailyIndex));
+}
+
 let challenge = challenges[dailyIndex];
 let score = 0;
 let rootAnswers = [];
@@ -315,11 +335,46 @@ function chooseAnswer(rootIndex, option, selectedButton) {
   }
 }
 
+const raeDefinitionCache = new Map();
+
+async function showRaeDefinition(word) {
+  const definitionElement = $("#result-definition");
+  const definitionLabel = $("#result-definition-label");
+  definitionElement.textContent = "Consultando la definición del DLE…";
+  definitionLabel.textContent = "DEFINICIÓN";
+  const cacheKey = `etimologia-es-rae-definitions-v3-${dateKey(new Date())}`;
+  try {
+    const stored = JSON.parse(localStorage.getItem(cacheKey) || "null");
+    if (stored?.word === word && typeof stored.definition === "string" && stored.definition) {
+      raeDefinitionCache.set(word, stored.definition);
+      stored.definitionsCount ??= 1;
+      definitionLabel.textContent = stored.definitionsCount > 1 ? "DEFINICIONES" : "DEFINICIÓN";
+    }
+    if (!raeDefinitionCache.has(word)) {
+      const response = await fetch(`https://rae-api.com/api/words/${encodeURIComponent(word)}`);
+      if (!response.ok) throw new Error("La consulta no está disponible.");
+      const payload = await response.json();
+      const senses = payload?.data?.meanings?.flatMap((meaning) => meaning.senses || []) || [];
+      const descriptions = senses
+        .map((sense) => sense.description)
+        .filter(Boolean);
+      const definition = descriptions.map((description, index) => `${index + 1}. ${description}`).join("\n\n");
+      if (!definition) throw new Error("No se encontró una acepción.");
+      raeDefinitionCache.set(word, definition);
+      localStorage.setItem(cacheKey, JSON.stringify({ word, definition, definitionsCount: descriptions.length }));
+      definitionLabel.textContent = descriptions.length > 1 ? "DEFINICIONES" : "DEFINICIÓN";
+    }
+    definitionElement.textContent = raeDefinitionCache.get(word).replace(/\n(?!\n)/g, "\n\n");
+  } catch {
+    definitionElement.textContent = "No se pudo cargar la definición en este momento. Puedes consultarla directamente en el DLE.";
+  }
+}
+
 function showResult() {
   $("#score").textContent = score;
   $("#result-title").textContent = `Etimología de ${challenge.word}`;
   const explanation = challenge.parts.map((part) => `«${part.text}» = «${part.meaning}»`).join(" + ");
-  $("#result-definition").textContent = challenge.definition;
+  showRaeDefinition(challenge.word);
   const raeLink = $("#rae-link");
   raeLink.href = `https://dle.rae.es/${encodeURIComponent(challenge.word)}`;
   raeLink.textContent = `Ver «${challenge.word}» en el DLE`;
@@ -388,17 +443,12 @@ document.querySelectorAll(".share-option").forEach((button) => button.addEventLi
     status.textContent = "Abriendo Facebook…";
     return;
   }
-  if (platform === "native") {
+  if (platform === "copy") {
     try {
-      if (navigator.share) {
-        await navigator.share({ title: "etimologia.es", text, url });
-        status.textContent = "Elige dónde compartir tu resultado.";
-      } else {
-        await navigator.clipboard.writeText(`${text} ${url}`);
-        status.textContent = "Resultado y enlace copiados.";
-      }
+      await navigator.clipboard.writeText(`${text} ${url}`);
+      status.textContent = "Resultado y enlace copiados.";
     } catch {
-      status.textContent = "No se pudo abrir el menú de compartir.";
+      status.textContent = "No se pudo copiar el enlace.";
     }
   }
 }));
@@ -434,17 +484,12 @@ document.querySelectorAll(".footer-share").forEach((button) => button.addEventLi
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, "_blank", "noopener,noreferrer");
     return;
   }
-  if (platform === "native") {
+  if (platform === "copy") {
     try {
-      if (navigator.share) {
-        await navigator.share({ title: "etimologia.es", text, url });
-        status.textContent = "Menú de compartir abierto.";
-      } else {
-        await navigator.clipboard.writeText(`${text} ${url}`);
-        status.textContent = "Enlace copiado.";
-      }
+      await navigator.clipboard.writeText(url);
+      status.textContent = "Link copiado.";
     } catch {
-      status.textContent = "No se pudo abrir el menú de compartir.";
+      status.textContent = "No se pudo copiar el link.";
     }
   }
 }));

@@ -123,7 +123,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outlin
 .result-details { display: grid; gap: 1.25rem; margin-top: 1rem; }
 .result-detail { padding: 0 .25rem; text-align: left; }
 .result-section-label { margin: 0 0 .45rem !important; color: var(--accent-deep); font-family: "DM Mono", monospace; font-size: .63rem !important; font-weight: 500; letter-spacing: .1em; }
-.result-definition { padding: 0; background: transparent; font-weight: 700; }
+.result-definition { padding: 0; background: transparent; font-weight: 400; white-space: pre-line; }
 .rae-link { display: inline-flex; margin: .55rem 0 0; color: var(--ink); font-size: .82rem; font-weight: 700; text-decoration-color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: .22em; }
 .rae-link:hover, .rae-link:focus-visible { color: var(--accent); }
 .score-badge { display: inline-flex; align-items: baseline; gap: .08rem; margin: .15rem 0 0; padding: 0; color: var(--ink); font-family: "DM Mono", monospace; font-size: .85rem; }
@@ -226,8 +226,12 @@ body[data-theme="dark"] .result-modal .result-kicker { color: var(--accent); }
   .word { font-size: clamp(2.75rem, 16vw, 4.2rem); }
   .result-actions { flex-direction: column; }
   .result { padding: 1.7rem .95rem; }
-  .share-options { gap: .32rem; }
-  .share-option { width: 2.05rem; height: 2.05rem; }
+  .share-options { gap: .28rem; }
+  .share-option { width: 2.25rem; height: 2.25rem; }
+  .share-option svg { width: 1.35rem; height: 1.35rem; }
+  .site-footer { gap: .45rem; }
+  .footer-share { width: 2.1rem; height: 2.1rem; }
+  .footer-share svg { width: 1.3rem; height: 1.3rem; }
 }
 
 @media (max-width: 640px) {
