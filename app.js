@@ -252,9 +252,9 @@ function setChallenge(nextChallenge) {
 }
 
 function renderRoots() {
-  $("#word").innerHTML = challenge.parts
-    .map((wordPart) => `<span class="word-part">${wordPart.text}</span>`)
-    .join("");
+  $("#word").innerHTML = challenge.parts.length === 1
+    ? `<span class="word-part">${challenge.word}</span>`
+    : challenge.parts.map((wordPart) => `<span class="word-part">${wordPart.text}</span>`).join("");
   rootsGrid.innerHTML = "";
   challenge.parts.forEach((part, rootIndex) => {
     const card = document.createElement("section");
