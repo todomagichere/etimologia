@@ -133,6 +133,12 @@ const statsKey = "etimologia-es-stats";
 const dailyProgressKey = "etimologia-es-daily-progress";
 const themeKey = "etimologia-es-theme";
 
+// Los eventos se envían a la misma dataLayer que consume Google Analytics.
+// Solo incluimos datos agregados del reto; no se registran respuestas ni datos personales.
+function trackAnalyticsEvent(event, parameters = {}) {
+  window.dataLayer?.push({ event, ...parameters });
+}
+
 function readStats() {
   try {
     const stored = JSON.parse(localStorage.getItem(statsKey) || "{}");
@@ -239,6 +245,10 @@ function recordGame() {
   stats.lastPlayed = today;
   localStorage.setItem(statsKey, JSON.stringify(stats));
   updateStatsPanel();
+  trackAnalyticsEvent("challenge_completed", {
+    score,
+    total_roots: challenge.parts.length
+  });
 }
 
 function shuffled(items) {
@@ -324,6 +334,10 @@ function chooseAnswer(rootIndex, option, selectedButton) {
   rootSelections[rootIndex] = option;
   if (correct) score += 1;
   persistDailyProgress();
+  trackAnalyticsEvent("answer_selected", {
+    root_position: rootIndex + 1,
+    is_correct: correct
+  });
 
   const card = selectedButton.closest(".root-card");
   applyAnswerState(card, part, option);
@@ -379,7 +393,13 @@ function showResult() {
   raeLink.href = `https://dle.rae.es/${encodeURIComponent(challenge.word)}`;
   raeLink.textContent = `Ver «${challenge.word}» en el DLE`;
   $("#result-copy").textContent = `${challenge.word} se forma con ${explanation}.`;
-  if (!result.open) result.showModal();
+  if (!result.open) {
+    result.showModal();
+    trackAnalyticsEvent("result_viewed", {
+      score,
+      total_roots: challenge.parts.length
+    });
+  }
   if (!dailyProgress?.completed) {
     dailyProgress ??= {};
     dailyProgress.completed = true;
@@ -403,7 +423,7 @@ function shareUrl(platform, campaign = "resultado") {
 }
 
 function reportShare(platform) {
-  window.dataLayer?.push({ event: "share_result", platform, word: challenge.word, score, total: challenge.parts.length });
+  trackAnalyticsEvent("share_result", { platform, word: challenge.word, score, total: challenge.parts.length });
 }
 
 document.querySelectorAll(".share-option").forEach((button) => button.addEventListener("click", async () => {
@@ -458,7 +478,7 @@ document.querySelectorAll(".footer-share").forEach((button) => button.addEventLi
   const text = "Descubre etimologia.es: un juego diario para aprender de dónde vienen las palabras. ¿Te animas a jugar?";
   const url = shareUrl(platform, "visita");
   const status = $("#footer-share-status");
-  window.dataLayer?.push({ event: "share_site", platform });
+  trackAnalyticsEvent("share_site", { platform });
 
   if (platform === "whatsapp") {
     window.open(`https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`, "_blank", "noopener,noreferrer");
@@ -495,11 +515,18 @@ document.querySelectorAll(".footer-share").forEach((button) => button.addEventLi
 }));
 
 const instructions = $("#instructions");
-$("#how-to-play").addEventListener("click", () => instructions.showModal());
+$("#how-to-play").addEventListener("click", () => {
+  trackAnalyticsEvent("help_viewed", { source: "topbar" });
+  instructions.showModal();
+});
 $("#close-instructions").addEventListener("click", () => instructions.close());
-$("#start-button").addEventListener("click", () => instructions.close());
+$("#start-button").addEventListener("click", () => {
+  trackAnalyticsEvent("help_started");
+  instructions.close();
+});
 $("#stats-button").addEventListener("click", () => {
   updateStatsPanel();
+  trackAnalyticsEvent("statistics_viewed", { source: "topbar" });
   $("#stats-dialog").showModal();
 });
 $("#close-stats").addEventListener("click", () => $("#stats-dialog").close());
@@ -530,6 +557,11 @@ themeToggle.addEventListener("click", () => {
   document.body.dataset.theme = nextTheme;
   localStorage.setItem(themeKey, nextTheme);
   updateThemeButton();
+  trackAnalyticsEvent("theme_changed", { theme: nextTheme });
+});
+
+$("#rae-link").addEventListener("click", () => {
+  trackAnalyticsEvent("dictionary_opened", { dictionary: "dle" });
 });
 
 updateStatsPanel();

@@ -13,6 +13,7 @@ La aplicación está pensada para jugarse en español y funciona completamente e
 - Compartición mediante WhatsApp, Telegram, Facebook, X, Threads, LinkedIn y el menú nativo del dispositivo.
 - Estadísticas locales de partidas, aciertos, media y actividad reciente.
 - Tema automático según el sistema, con selector manual claro/oscuro.
+- Eventos de Google Analytics para progreso del reto, consulta de ayuda y estadísticas, uso del DLE, tema y compartición.
 - Metadatos SEO y GEO: datos estructurados, `robots.txt`, `sitemap.xml`, `llms.txt`, manifest y tarjeta social WebP.
 
 ## Ejecutar en local con Docker
@@ -75,6 +76,10 @@ No abras `index.html` directamente: el contenedor debe servir la carpeta por HTT
 El reto se elige a partir de la fecha local y del banco de palabras. Para ampliar o corregir el contenido editorial, modifica `word-bank.js`; la interfaz y la lógica del juego permanecen separadas en `index.html`, `styles.css` y `app.js`.
 
 Las definiciones mostradas en la aplicación son resúmenes educativos. El resultado incluye un enlace directo al DLE de la RAE para consultar la entrada lexicográfica oficial.
+
+## Analítica
+
+Además de la visita de página que registra GA4, la aplicación envía estos eventos personalizados: `help_viewed`, `help_started`, `statistics_viewed`, `answer_selected`, `challenge_completed`, `result_viewed`, `dictionary_opened`, `theme_changed`, `share_result` y `share_site`. Los eventos del reto solo incluyen métricas agregadas (posición de la raíz, si fue correcta y puntuación); no se envían respuestas textuales ni datos personales.
 
 ## Despliegue
 
