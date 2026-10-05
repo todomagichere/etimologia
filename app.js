@@ -133,10 +133,10 @@ const statsKey = "etimologia-es-stats";
 const dailyProgressKey = "etimologia-es-daily-progress";
 const themeKey = "etimologia-es-theme";
 
-// Los eventos se envían a la misma dataLayer que consume Google Analytics.
+// Los eventos se envían a Google Analytics mediante gtag.
 // Solo incluimos datos agregados del reto; no se registran respuestas ni datos personales.
 function trackAnalyticsEvent(event, parameters = {}) {
-  window.dataLayer?.push({ event, ...parameters });
+  window.gtag?.("event", event, parameters);
 }
 
 function readStats() {
@@ -562,6 +562,14 @@ themeToggle.addEventListener("click", () => {
 
 $("#rae-link").addEventListener("click", () => {
   trackAnalyticsEvent("dictionary_opened", { dictionary: "dle" });
+});
+
+// El widget de Ko-fi se inserta después de cargar este script; la delegación
+// permite registrar sus clics sin modificar el código de terceros.
+document.addEventListener("click", (event) => {
+  if (event.target.closest(".kofi-button")) {
+    trackAnalyticsEvent("kofi_clicked", { source: "floating_widget" });
+  }
 });
 
 updateStatsPanel();

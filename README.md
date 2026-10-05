@@ -79,7 +79,7 @@ Las definiciones mostradas en la aplicación son resúmenes educativos. El resul
 
 ## Analítica
 
-Además de la visita de página que registra GA4, la aplicación envía estos eventos personalizados: `help_viewed`, `help_started`, `statistics_viewed`, `answer_selected`, `challenge_completed`, `result_viewed`, `dictionary_opened`, `theme_changed`, `share_result` y `share_site`. Los eventos del reto solo incluyen métricas agregadas (posición de la raíz, si fue correcta y puntuación); no se envían respuestas textuales ni datos personales.
+Además de la visita de página que registra GA4, la aplicación envía estos eventos personalizados: `help_viewed`, `help_started`, `statistics_viewed`, `answer_selected`, `challenge_completed`, `result_viewed`, `dictionary_opened`, `theme_changed`, `share_result`, `share_site` y `kofi_clicked`. Los eventos del reto solo incluyen métricas agregadas (posición de la raíz, si fue correcta y puntuación); no se envían respuestas textuales ni datos personales.
 
 ## Despliegue
 
