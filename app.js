@@ -1,3 +1,4 @@
+/* Legacy generator retired: the daily cycle now uses the curated catalog below.
 let challenges = [
   {
     word: "telemetría",
@@ -91,21 +92,62 @@ const generatedChallenges = technicalRoots.flatMap(([form, text, meaning, origin
   }))
 )).filter(({ word }) => !existingWords.has(word)).slice(0, 396);
 
-challenges.push(...window.createWordBank(challenges.map(({ word }) => word)));
+*/
+// El ciclo diario usa exclusivamente el catálogo editorial de palabras completas.
+let challenges = window.createWordBank();
 
-// Esta defensa también cubre los retos escritos directamente en este archivo.
-// Una palabra sin entrada contrastada en el DLE no llega a formar parte del ciclo diario.
-const manuallyVerifiedWords = new Set(["telemetría", "microscopio", "biblioteca", "aeropuerto"]);
-challenges = challenges.filter(({ word }) => manuallyVerifiedWords.has(word) || window.isRaeVerifiedWord?.(word));
+// Orden editorial estable: cada día utiliza dos raíces distintas de las del
+// día anterior. Así, A + B siempre va seguido de una palabra C + D, nunca de
+// A + D ni B + C. La semilla fija da la misma secuencia a todos los usuarios.
+const rootFamilies = new Map([
+  ["λόγος", "log"], ["λογία", "log"],
+  ["γραφία", "graf"], ["γράφειν", "graf"],
+  ["μετρία", "metr"], ["μέτρον", "metr"],
+  ["φιλία", "fil"], ["φίλος", "fil"],
+  ["σκοπία", "scop"], ["σκοπεῖν", "scop"],
+  ["φωνή", "fon"], ["γένεσις", "gen"], ["-γενής", "gen"]
+]);
 
-// Orden editorial estable: evita bloques alfabéticos sin que cada usuario
-// reciba una palabra distinta en la misma fecha.
-let shuffleSeed = 0x4554494d;
-for (let index = challenges.length - 1; index > 0; index -= 1) {
-  shuffleSeed = (shuffleSeed * 1664525 + 1013904223) >>> 0;
-  const swapIndex = shuffleSeed % (index + 1);
-  [challenges[index], challenges[swapIndex]] = [challenges[swapIndex], challenges[index]];
+function rootKeys(challenge) {
+  return new Set(challenge.parts.map((part) => `${part.origin}:${rootFamilies.get(part.original) || part.original}`));
 }
+
+function sharesRoot(first, second) {
+  const firstRoots = rootKeys(first);
+  return [...rootKeys(second)].some((root) => firstRoots.has(root));
+}
+
+function nextSeed(seed) {
+  return (seed * 1664525 + 1013904223) >>> 0;
+}
+
+function buildDailyOrder(items) {
+  for (let attempt = 0; attempt < 64; attempt += 1) {
+    let seed = (0x4554494d + attempt) >>> 0;
+    const remaining = [...items];
+    for (let index = remaining.length - 1; index > 0; index -= 1) {
+      seed = nextSeed(seed);
+      const swapIndex = seed % (index + 1);
+      [remaining[index], remaining[swapIndex]] = [remaining[swapIndex], remaining[index]];
+    }
+
+    const ordered = [remaining.shift()];
+    while (remaining.length) {
+      const eligible = remaining.reduce((indexes, candidate, index) => {
+        if (!sharesRoot(ordered.at(-1), candidate)) indexes.push(index);
+        return indexes;
+      }, []);
+      if (!eligible.length) break;
+      seed = nextSeed(seed);
+      const candidateIndex = eligible[seed % eligible.length];
+      ordered.push(remaining.splice(candidateIndex, 1)[0]);
+    }
+    if (ordered.length === items.length) return ordered;
+  }
+  throw new Error("No se pudo crear un calendario sin raíces consecutivas repetidas.");
+}
+
+challenges = buildDailyOrder(challenges);
 
 const today = new Date();
 let dailyIndex = Math.floor(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) / 86400000) % challenges.length;
@@ -114,9 +156,10 @@ const isLocalPreview = ["localhost", "127.0.0.1"].includes(window.location.hostn
 if (isLocalPreview) {
   const previewIndexKey = "etimologia-es-local-preview-index";
   const previousIndex = Number(sessionStorage.getItem(previewIndexKey));
+  const previousChallenge = challenges[previousIndex];
   do {
     dailyIndex = Math.floor(Math.random() * challenges.length);
-  } while (challenges.length > 1 && dailyIndex === previousIndex);
+  } while (challenges.length > 1 && (dailyIndex === previousIndex || (previousChallenge && sharesRoot(previousChallenge, challenges[dailyIndex]))));
   sessionStorage.setItem(previewIndexKey, String(dailyIndex));
 }
 
@@ -270,7 +313,7 @@ function setChallenge(nextChallenge) {
 function renderRoots() {
   $("#word").innerHTML = challenge.parts.length === 1
     ? `<span class="word-part">${challenge.word}</span>`
-    : challenge.parts.map((wordPart) => `<span class="word-part">${wordPart.text}</span>`).join("");
+    : challenge.parts.map((wordPart) => `<span class="word-part">${wordPart.display || wordPart.text}</span>`).join("");
   rootsGrid.innerHTML = "";
   challenge.parts.forEach((part, rootIndex) => {
     const card = document.createElement("section");
@@ -351,7 +394,8 @@ function chooseAnswer(rootIndex, option, selectedButton) {
 
 const raeDefinitionCache = new Map();
 
-async function showRaeDefinition(word) {
+async function showRaeDefinition(challenge) {
+  const { word } = challenge;
   const definitionElement = $("#result-definition");
   const definitionLabel = $("#result-definition-label");
   definitionElement.textContent = "Consultando la definición del DLE…";
@@ -380,7 +424,7 @@ async function showRaeDefinition(word) {
     }
     definitionElement.textContent = raeDefinitionCache.get(word).replace(/\n(?!\n)/g, "\n\n");
   } catch {
-    definitionElement.textContent = "No se pudo cargar la definición en este momento. Puedes consultarla directamente en el DLE.";
+    definitionElement.textContent = challenge.definition || "No se pudo cargar la definición en este momento. Puedes consultarla directamente en el DLE.";
   }
 }
 
@@ -388,7 +432,7 @@ function showResult() {
   $("#score").textContent = score;
   $("#result-title").textContent = `Etimología de ${challenge.word}`;
   const explanation = challenge.parts.map((part) => `«${part.text}» = «${part.meaning}»`).join(" + ");
-  showRaeDefinition(challenge.word);
+  showRaeDefinition(challenge);
   const raeLink = $("#rae-link");
   raeLink.href = `https://dle.rae.es/${encodeURIComponent(challenge.word)}`;
   raeLink.textContent = `Ver «${challenge.word}» en el DLE`;

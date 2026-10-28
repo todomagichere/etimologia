@@ -1,287 +1,7290 @@
-// Banco editorial de compuestos grecolatinos. Se mantiene separado de la interfaz
-// para ampliar o revisar el corpus sin tocar la lógica del juego.
-window.createWordBank = (excludedWords = []) => {
-  // Lista blanca editorial: cada forma se ha contrastado con el lemario del
-  // Diccionario de la lengua española. Nunca se generan palabras por la mera
-  // combinación de una raíz y un sufijo.
-  const normalizeWord = (word) => word.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-  const raeVerifiedWords = new Set(`
-alcohol aceite azúcar almohada alcalde ojalá guerra yelmo jardín garaje hotel bufé maquillaje tomate chocolate aguacate coyote papa puma hamaca canoa huracán barbacoa izquierda pizarra fútbol mitin
-aerología aerografía aerofobia aeroterapia agrología agronomía antropología antropografía antropometría astrología astrografía astronomía autografía autonomía bibliología bibliografía bibliofilia biología biografía biometría bioterapia cardiología cardiografía cardiopatía citología cronología cronografía cronometría demografía ecología ecografía economía electrometría electroterapia entomología etnología etnografía fotografía fotometría fotofobia fototerapia fonología fonografía fonometría fitología fitografía fitoterapia gastropatía gastronomía geología geografía geometría geonomía gerontología ginecología heliografía helioterapia hemofilia hemopatía hepatología hepatopatía heteronomía hidrología hidrografía hidrometría hidrofobia hidroterapia hidropatía ictiología ictiografía iconología iconografía lexicología lexicografía litología litografía micrografía mitología mitografía morfología morfometría neurología neuropatía odontología oncología ornitología ortología ortografía osteología osteopatía paleografía
-acrofobia anemografía anemometría anemoscopio angiología angiografía angiogénesis aristocracia arqueología arqueólogo artrología artrografía artropatía artroscopia artroscopio autocracia bacteriología bibliomancia biogénesis cosmología cosmografía criptología criptografía dactilología dactilografía dactiloscopia demoscopia democracia endoscopia endoscopio endogénesis epigrafía epigénesis eritrofobia espeleología estenografía eurocracia fototeca fotogenia fotogénesis fonoteca fonotecnia gastroscopia gastroscopio geomancia geotecnia geogenia gerontocracia ginecocracia heteromancia hidroscopia hidromancia hidrotecnia histología homeopatía iconoscopio isometría isonomía isofonía miología necrología necrofilia necroscopia necromancia neología oncogénesis ornitomancia ortofonía osteogénesis patología patografía patogenia patogénesis petrología petrografía pirología piromancia pirotecnia plutocracia poligrafía polimetría polifonía psicología psicometría psicoterapia psicopatía psicotecnia psicofonía sociología sociometría sociopatía telegrafía telepatía telescopio telefonía telegenia termología termografía termometría termoterapia termoscopio termotecnia topología topografía toxicología toxicogénesis zoología zoografía zoofobia zoofilia zootecnia
-acrofobia aerologia aerografia aerofobia aeroterapia aeromancia aerotecnia aerografo aerometro aerodromo aerofono agrologia agronomia anemografia anemometria anemoscopio anemografo anemometro anemofilo angiologia angiografia angiogenesis angiologo antropologia antropografia antropometria antropogenesis antropologo antropofago aristocracia arqueologia arqueologo artrologia artrografia artropatia artroscopia artroscopio astrologia astrografia astronomia astrografo astrologo autografia autonomia autocracia bacteriologia bacteriologo bacteriofago bibliologia bibliografia bibliofilia bibliomancia biblioteca bibliografo bibliofilo biologia biografia biometria bioterapia biogenesis cardiologia cardiografia cardiopatia cardiografo cardiologo citologia citologo citofono cosmologia cosmografia cosmografo cosmologo cosmodromo criptologia criptografia criptografo cronologia cronografia cronometria cronografo cronologo cronometro dactilologia dactilografia dactiloscopia dactilografo demografia demoscopia democracia demografo ecologia ecografia economia ecografo ecologo electrometria electroterapia electroscopio electrotecnia electrometro electrogeno electroforo endoscopia endoscopio endogenesis endogeno entomologia entomologo entomofilo epigrafia epigenesis epilogo eritrofobia espeleologia espeleologo estenografia estenografo etnologia etnografia etnografo etnologo eurocracia fitologia fitografia fitoterapia fitografo fitofago fotografia fotometria fotofobia fototerapia fototeca fotogenia fotogenesis fotografo fotometro fonologia fonografia fonometria fonotecnia fonoteca fonografo fonologo fonometro gastropatia gastronomia gastroscopia gastroscopio geologia geografia geometria geonomia geomancia geotecnia geogenia gerontologia gerontocracia gerontologo ginecologia ginecocracia ginecologo hemofilia hemopatia hepatologia hepatopatia hepatologo heteronomia heteromancia hidrologia hidrografia hidrometria hidrofobia hidroterapia hidropatia hidroscopia hidromancia hidrotecnia hidrografo hidrologo hidrometro hidrogeno hidrofilo hidrofono histologia histologo homeopatia ictiologia ictiografia ictiologo ictiofago iconologia iconografia iconoscopio iconologo isometria isonomia isofonia isofago isofono lexicologia lexicografia lexicografo lexicologo litologia litografia litografo litologo litofago micrografia microscopia microscopio micrografo micrometro microfono miologia mitologia mitografia mitografo mitologo morfologia morfometria morfologo necrologia necrofilia necroscopia necromancia necrofilo necrofago necroforo neologia neurologia neuropatia neurologo odontologia odontologo oncologia oncogenesis oncologo ornitologia ornitomancia ornitologo ortologia ortografia ortofonia ortografo ortologo osteologia osteopatia osteogenesis osteologo paleografia paleografo paleologo paleogeno patologia patografia patogenia patogenesis petrologia petrografia pirologia pirometria piromancia pirotecnia pirometro pirogeno plutocracia poligrafia polimetria polifonia psicologia psicometria psicoterapia psicopatia psicotecnia psicofonia psicologo psicogeno sociologia sociometria sociopatia sociologo telegrafia telemetria telepatia telescopio telefonia telegenia telegrafo telemetro telefono termologia termografia termometria termoterapia termoscopio termotecnia termografo termometro topologia topografia topografo toxicologia toxicogenesis toxicologo zoologia zoografia zoofobia zoofilia zootecnia zoologo zoofilo zoofago andrologia androfobia androgenesis andrologo androgeno aracnologia aracnologo audiologia audiometria audiologo audiometro audiofono broncoscopia broncoscopio caligrafia cinefilia cineteca cinefilo cistoscopia cistoscopio climatologia climatologo clorofilo corografia crioterapia crioscopia criogenia dermatologia dermatologo diafonia disgrafia disfonia egofonia encefalografia encefalopatia ergometria ergoterapia ergonomia ergometro estereografia estereometria estereoscopia estereoscopio estereofonia estereografo estetoscopia estetoscopio etiologia farmacologia farmacoterapia farmacologo filologia filogenia filogenesis filologo filofago fisiologia fisiografia fisioterapia fisionomia fisiocracia fisiologo frenologia frenopatia frenologo galactometro galactogeno galactofago galactoforo glucometro glucogeno heptametro higrometria higroscopia higroscopio higrometro higrofilo holografia holografo holometro homologia homografia homofobia homofonia homografo homologo homofono mastologia mastopatia mastologo megafonia megafono melanoforo mesoterapia mesocracia metafonia monografia monofilo oftalmologia oftalmoscopia oftalmoscopio oftalmologo ontologia ontogenia ontologo otologia otoscopia otoscopio otologo parafilia pedologia pedofilia pedofilo piezometria piezometro podologia podologo podometro pseudologia radiologia radiografia radiometria radioterapia radioscopia radiotecnia radiofonia radiologo radiometro reologia sarcofago sinfonia somatologia taquigrafia taquimetria taquigrafo taquimetro tecnologia tecnografia tecnocracia tecnologo teologia teocracia tropologia urologia urografia uroscopia uromancia urologo xenofobia xilografia xilografo xilofago xilofono
-  `.trim().split(/\s+/).map(normalizeWord));
-  const isRaeVerified = (word) => raeVerifiedWords.has(normalizeWord(word));
-  window.isRaeVerifiedWord = isRaeVerified;
-  const roots = [
-    ["aero","aero","aire","ἀήρ","el aire"],["agro","agro","campo","ἀγρός","el campo"],["antropo","antropo","ser humano","ἄνθρωπος","el ser humano"],["arqui","arqui","origen, principio","ἀρχή","el origen"],["astro","astro","estrella","ἄστρον","los astros"],["auto","auto","uno mismo","αὐτός","uno mismo"],["biblio","biblio","libro","βιβλίον","los libros"],["bio","bio","vida","βίος","la vida"],["cardio","cardio","corazón","καρδία","el corazón"],["cito","cito","célula","κύτος","las células"],["crono","crono","tiempo","χρόνος","el tiempo"],["demo","demo","pueblo","δῆμος","el pueblo"],["dermo","dermo","piel","δέρμα","la piel"],["eco","eco","casa, entorno","οἶκος","el entorno"],["electro","electro","ámbar","ἤλεκτρον","la electricidad"],["endo","endo","dentro","ἔνδον","el interior"],["entomo","entomo","insecto","ἔντομον","los insectos"],["etno","etno","pueblo, grupo","ἔθνος","los pueblos"],["foto","foto","luz","φῶς","la luz"],["fono","fono","sonido, voz","φωνή","el sonido"],["fito","fito","planta","φυτόν","las plantas"],["gastro","gastro","estómago","γαστήρ","el estómago"],["geo","geo","tierra","γῆ","la Tierra"],["geronto","geronto","anciano","γέρων","la vejez"],["gineco","gineco","mujer","γυνή","la mujer"],["helio","helio","sol","ἥλιος","el Sol"],["hemo","hemo","sangre","αἷμα","la sangre"],["hepato","hepato","hígado","ἧπαρ","el hígado"],["hetero","hetero","diferente","ἕτερος","lo diferente"],["hidro","hidro","agua","ὕδωρ","el agua"],["ictio","ictio","pez","ἰχθύς","los peces"],["icono","icono","imagen","εἰκών","las imágenes"],["lexico","lexico","palabra","λέξις","las palabras"],["lito","lito","piedra","λίθος","las piedras"],["macro","macro","grande","μακρός","lo grande"],["micro","micro","pequeño","μικρός","lo pequeño"],["mito","mito","relato tradicional","μῦθος","los relatos tradicionales"],["morfo","morfo","forma","μορφή","las formas"],["nano","nano","muy pequeño","νᾶνος","lo diminuto"],["neuro","neuro","nervio","νεῦρον","el sistema nervioso"],["odonto","odonto","diente","ὀδούς","los dientes"],["onco","onco","masa, tumor","ὄγκος","los tumores"],["ornito","ornito","ave","ὄρνις","las aves"],["orto","orto","recto, correcto","ὀρθός","lo correcto"],["osteo","osteo","hueso","ὀστέον","los huesos"],["paleo","paleo","antiguo","παλαιός","lo antiguo"],["pato","pato","dolor, enfermedad","πάθος","la enfermedad"],["psico","psico","mente, alma","ψυχή","la mente"],["socio","socio","compañero","socius","la sociedad","latín"],["tele","tele","lejos, a distancia","τῆλε","la distancia"],["termo","termo","calor","θέρμη","el calor"],["topo","topo","lugar","τόπος","los lugares"],["toxico","toxico","veneno","τοξικόν","los venenos"],["zoo","zoo","animal","ζῷον","los animales"]
-    , ["acro","acro","extremo, altura","ἄκρον","lo más alto"],["anemo","anemo","viento","ἄνεμος","el viento"],["angio","angio","vaso, conducto","ἀγγεῖον","los vasos"],["aristo","aristo","mejor, excelente","ἄριστος","lo mejor"],["arqueo","arqueo","antiguo","ἀρχαῖος","lo antiguo"],["artro","artro","articulación","ἄρθρον","las articulaciones"],["bacterio","bacterio","bastoncillo","βακτηρία","las bacterias"],["cosmo","cosmo","orden, universo","κόσμος","el universo"],["cripto","cripto","oculto","κρυπτός","lo oculto"],["dactilo","dactilo","dedo","δάκτυλος","los dedos"],["epi","epi","sobre","ἐπί","lo que está encima"],["eritro","eritro","rojo","ἐρυθρός","el color rojo"],["espeleo","espeleo","cueva","σπήλαιον","las cuevas"],["esteno","esteno","estrecho","στενός","lo estrecho"],["euro","euro","Europa","Εὐρώπη","Europa"],["histo","histo","tejido","ἱστός","los tejidos"],["homeo","homeo","semejante","ὅμοιος","lo semejante"],["iso","iso","igual","ἴσος","lo igual"],["mio","mio","músculo","μῦς","los músculos"],["necro","necro","muerte","νεκρός","la muerte"],["neo","neo","nuevo","νέος","lo nuevo"],["petro","petro","piedra","πέτρα","las piedras"],["piro","piro","fuego","πῦρ","el fuego"],["pluto","pluto","riqueza","πλοῦτος","la riqueza"],["poli","poli","mucho, numeroso","πολύς","lo numeroso"],["andro","andro","hombre","ἀνήρ","los hombres"],["aracno","aracno","araña","ἀράχνη","las arañas"],["audio","audio","oír","audire","la audición","latín"],["bronco","bronco","tráquea","βρόγχος","los bronquios"],["cali","cali","belleza","κάλλος","lo bello"],["cine","cine","movimiento","κίνησις","el movimiento"],["cisto","cisto","vejiga, saco","κύστις","los sacos"],["climato","climato","inclinación, clima","κλίμα","el clima"],["cloro","cloro","verde","χλωρός","el color verde"],["crio","crio","frío","κρύος","el frío"],["dermato","dermato","piel","δέρμα","la piel"],["dia","dia","a través de","διά","el paso"],["dis","dis","dificultad","δυσ-","lo difícil"],["ego","ego","yo","ἐγώ","el yo"],["encefalo","encefalo","cerebro","ἐγκέφαλος","el cerebro"],["ergo","ergo","trabajo","ἔργον","el trabajo"],["estereo","estereo","sólido","στερεός","lo sólido"],["esteto","esteto","sensación","αἴσθησις","la sensación"],["etio","etio","causa","αἰτία","la causa"],["farmaco","farmaco","medicamento","φάρμακον","los medicamentos"],["filo","filo","amor, afinidad","φίλος","la afinidad"],["fisio","fisio","naturaleza","φύσις","la naturaleza"],["freno","freno","mente","φρήν","la mente"],["galacto","galacto","leche","γάλα","la leche"],["gluco","gluco","dulce","γλυκύς","lo dulce"],["higro","higro","humedad","ὑγρός","la humedad"],["holo","holo","todo, entero","ὅλος","el conjunto"],["homo","homo","igual","ὁμός","lo igual"],["masto","masto","mama","μαστός","las mamas"],["mega","mega","grande","μέγας","lo grande"],["melano","melano","negro","μέλας","el color negro"],["meso","meso","medio","μέσος","lo intermedio"],["meta","meta","cambio, más allá","μετά","el cambio"],["mono","mono","uno, único","μόνος","lo único"],["oftalmo","oftalmo","ojo","ὀφθαλμός","los ojos"],["onto","onto","ser","ὄν","el ser"],["oto","oto","oído","οὖς","el oído"],["para","para","junto a","παρά","lo cercano"],["pedo","pedo","niño","παῖς","los niños"],["piezo","piezo","presión","πιέζειν","la presión"],["podo","podo","pie","πούς","los pies"],["pseudo","pseudo","falso","ψευδής","lo falso"],["radio","radio","rayo","radius","los rayos","latín"],["sarco","sarco","carne","σάρξ","la carne"],["sin","sin","con, junto","σύν","la unión"],["somato","somato","cuerpo","σῶμα","el cuerpo"],["taqui","taqui","rápido","ταχύς","la rapidez"],["tecno","tecno","arte, técnica","τέχνη","la técnica"],["teo","teo","dios","θεός","lo divino"],["tropo","tropo","giro, cambio","τρόπος","el cambio"],["uro","uro","orina","οὖρον","la orina"],["xeno","xeno","extranjero","ξένος","lo extranjero"],["xilo","xilo","madera","ξύλον","la madera"]
+// Catálogo editorial de palabras completas. No se generan términos combinando
+// listas de raíces: cada entrada contiene la segmentación y el sentido que le
+// corresponden a esa palabra concreta.
+window.createWordBank = () => {
+  const words = [
+    { word: "telemetría", definition: "Medición a distancia de magnitudes físicas.", parts: [{ text: "tele", meaning: "lejos, a distancia", origin: "griego", original: "τῆλε" }, { text: "metría", meaning: "medida", origin: "griego", original: "μετρία" }] },
+    { word: "microscopio", definition: "Instrumento que permite observar objetos demasiado pequeños para verse a simple vista.", parts: [{ text: "micro", meaning: "pequeño", origin: "griego", original: "μικρός" }, { text: "scopio", meaning: "observar", origin: "griego", original: "σκοπεῖν" }] },
+    { word: "biblioteca", definition: "Lugar o colección organizada de libros.", parts: [{ text: "biblio", meaning: "libro", origin: "griego", original: "βιβλίον" }, { text: "teca", meaning: "depósito, caja", origin: "griego", original: "θήκη" }] },
+    { word: "aeropuerto", definition: "Terreno destinado al despegue y aterrizaje de aeronaves.", parts: [{ text: "aero", meaning: "aire", origin: "griego", original: "ἀήρ" }, { text: "puerto", meaning: "paso, entrada", origin: "latín", original: "portus" }] },
+
+    { word: "filófago", definition: "Dicho de un animal: que se alimenta de hojas.", parts: [{ text: "filo", display: "filó", meaning: "hoja", origin: "griego", original: "φύλλον" }, { text: "fago", meaning: "que come", origin: "griego", original: "φαγεῖν" }] },
+    { word: "fitófago", definition: "Dicho de un animal: que se alimenta de vegetales.", parts: [{ text: "fito", display: "fitó", meaning: "planta", origin: "griego", original: "φυτόν" }, { text: "fago", meaning: "que come", origin: "griego", original: "φαγεῖν" }] },
+    { word: "xilófago", definition: "Dicho de un animal: que se alimenta de madera.", parts: [{ text: "xilo", display: "xiló", meaning: "madera", origin: "griego", original: "ξύλον" }, { text: "fago", meaning: "que come", origin: "griego", original: "φαγεῖν" }] },
+    { word: "ictiófago", definition: "Dicho de un animal: que se alimenta de peces.", parts: [{ text: "ictio", display: "ictió", meaning: "pez", origin: "griego", original: "ἰχθύς" }, { text: "fago", meaning: "que come", origin: "griego", original: "φαγεῖν" }] },
+    { word: "antropófago", definition: "Que se alimenta de carne humana.", parts: [{ text: "antropo", display: "antropó", meaning: "ser humano", origin: "griego", original: "ἄνθρωπος" }, { text: "fago", meaning: "que come", origin: "griego", original: "φαγεῖν" }] },
+    { word: "bacteriófago", definition: "Virus que infecta y destruye bacterias.", parts: [{ text: "bacterio", display: "bacterió", meaning: "bacteria", origin: "griego", original: "βακτηρία" }, { text: "fago", meaning: "que come", origin: "griego", original: "φαγεῖν" }] },
+    { word: "galactófago", definition: "Que se alimenta de leche.", parts: [{ text: "galacto", display: "galactó", meaning: "leche", origin: "griego", original: "γάλα" }, { text: "fago", meaning: "que come", origin: "griego", original: "φαγεῖν" }] },
+    { word: "necrófago", definition: "Que se alimenta de cadáveres.", parts: [{ text: "necro", display: "necró", meaning: "cadáver, muerto", origin: "griego", original: "νεκρός" }, { text: "fago", meaning: "que come", origin: "griego", original: "φαγεῖν" }] },
+    { word: "sarcófago", definition: "Sepulcro, especialmente el construido en piedra.", parts: [{ text: "sarco", display: "sarcó", meaning: "carne", origin: "griego", original: "σάρξ" }, { text: "fago", meaning: "que come", origin: "griego", original: "φαγεῖν" }] },
+    { word: "macrófago", definition: "Célula que captura y digiere partículas extrañas y restos celulares.", parts: [{ text: "macro", display: "macró", meaning: "grande", origin: "griego", original: "μακρός" }, { text: "fago", meaning: "que come", origin: "griego", original: "φαγεῖν" }] },
+
+    { word: "filología", definition: "Ciencia que estudia una lengua y sus textos.", parts: [{ text: "filo", meaning: "amor, afinidad", origin: "griego", original: "φίλος" }, { text: "logía", meaning: "estudio, tratado", origin: "griego", original: "λογία" }] },
+    { word: "filósofo", definition: "Persona que busca la sabiduría o se dedica a la filosofía.", parts: [{ text: "filo", display: "filó", meaning: "amor, afinidad", origin: "griego", original: "φίλος" }, { text: "sofo", meaning: "sabiduría", origin: "griego", original: "σοφία" }] },
+    { word: "geografía", definition: "Ciencia que estudia la Tierra y su superficie.", parts: [{ text: "geo", meaning: "tierra", origin: "griego", original: "γῆ" }, { text: "grafía", meaning: "descripción, representación escrita", origin: "griego", original: "γραφία" }] },
+    { word: "fotografía", definition: "Técnica de obtener imágenes mediante la acción de la luz.", parts: [{ text: "foto", meaning: "luz", origin: "griego", original: "φῶς" }, { text: "grafía", meaning: "escritura, representación", origin: "griego", original: "γραφία" }] },
+    { word: "cartografía", definition: "Arte y ciencia de trazar mapas.", parts: [{ text: "carto", meaning: "mapa", origin: "griego", original: "χάρτης" }, { text: "grafía", meaning: "escritura, representación", origin: "griego", original: "γραφία" }] },
+    { word: "biografía", definition: "Historia de la vida de una persona.", parts: [{ text: "bio", meaning: "vida", origin: "griego", original: "βίος" }, { text: "grafía", meaning: "escritura, descripción", origin: "griego", original: "γραφία" }] },
+    { word: "bibliografía", definition: "Relación ordenada de libros u otros documentos sobre un asunto.", parts: [{ text: "biblio", meaning: "libro", origin: "griego", original: "βιβλίον" }, { text: "grafía", meaning: "escritura, descripción", origin: "griego", original: "γραφία" }] },
+    { word: "topografía", definition: "Conjunto de técnicas para describir y representar un terreno.", parts: [{ text: "topo", meaning: "lugar", origin: "griego", original: "τόπος" }, { text: "grafía", meaning: "descripción, representación", origin: "griego", original: "γραφία" }] },
+    { word: "etnografía", definition: "Estudio descriptivo de un pueblo o de sus costumbres.", parts: [{ text: "etno", meaning: "pueblo, grupo", origin: "griego", original: "ἔθνος" }, { text: "grafía", meaning: "descripción, representación", origin: "griego", original: "γραφία" }] },
+    { word: "lexicografía", definition: "Técnica de componer diccionarios.", parts: [{ text: "lexico", meaning: "palabra", origin: "griego", original: "λέξις" }, { text: "grafía", meaning: "escritura, descripción", origin: "griego", original: "γραφία" }] },
+    { word: "hidrografía", definition: "Estudio y descripción de las aguas de una región.", parts: [{ text: "hidro", meaning: "agua", origin: "griego", original: "ὕδωρ" }, { text: "grafía", meaning: "descripción, representación", origin: "griego", original: "γραφία" }] },
+
+    { word: "cronómetro", definition: "Reloj de gran precisión para medir intervalos de tiempo.", parts: [{ text: "crono", meaning: "tiempo", origin: "griego", original: "χρόνος" }, { text: "metro", meaning: "medida", origin: "griego", original: "μέτρον" }] },
+    { word: "termómetro", definition: "Instrumento para medir la temperatura.", parts: [{ text: "termo", meaning: "calor", origin: "griego", original: "θέρμη" }, { text: "metro", meaning: "medida", origin: "griego", original: "μέτρον" }] },
+    { word: "barómetro", definition: "Instrumento que mide la presión atmosférica.", parts: [{ text: "baro", meaning: "peso, presión", origin: "griego", original: "βάρος" }, { text: "metro", meaning: "medida", origin: "griego", original: "μέτρον" }] },
+    { word: "hidrómetro", definition: "Instrumento que mide la densidad de los líquidos.", parts: [{ text: "hidro", display: "hidró", meaning: "agua", origin: "griego", original: "ὕδωρ" }, { text: "metro", meaning: "medida", origin: "griego", original: "μέτρον" }] },
+    { word: "telescopio", definition: "Instrumento óptico para observar objetos muy lejanos.", parts: [{ text: "tele", meaning: "lejos, a distancia", origin: "griego", original: "τῆλε" }, { text: "scopio", meaning: "observar", origin: "griego", original: "σκοπεῖν" }] },
+    { word: "endoscopio", definition: "Instrumento para explorar el interior del cuerpo.", parts: [{ text: "endo", meaning: "dentro", origin: "griego", original: "ἔνδον" }, { text: "scopio", meaning: "observar", origin: "griego", original: "σκοπεῖν" }] },
+    { word: "periscopio", definition: "Instrumento óptico para observar desde una posición oculta.", parts: [{ text: "peri", meaning: "alrededor", origin: "griego", original: "περί" }, { text: "scopio", meaning: "observar", origin: "griego", original: "σκοπεῖν" }] },
+    { word: "teléfono", definition: "Aparato para transmitir sonidos a distancia.", parts: [{ text: "tele", display: "telé", meaning: "lejos, a distancia", origin: "griego", original: "τῆλε" }, { text: "fono", meaning: "sonido, voz", origin: "griego", original: "φωνή" }] },
+    { word: "fonógrafo", definition: "Aparato que registra y reproduce sonidos.", parts: [{ text: "fono", display: "fonó", meaning: "sonido, voz", origin: "griego", original: "φωνή" }, { text: "grafo", meaning: "que escribe o registra", origin: "griego", original: "γράφειν" }] },
+    { word: "xilófono", definition: "Instrumento musical de láminas de madera que se golpean.", parts: [{ text: "xilo", display: "xiló", meaning: "madera", origin: "griego", original: "ξύλον" }, { text: "fono", meaning: "sonido, voz", origin: "griego", original: "φωνή" }] },
+
+    { word: "democracia", definition: "Sistema político en el que el poder reside en el pueblo.", parts: [{ text: "demo", meaning: "pueblo", origin: "griego", original: "δῆμος" }, { text: "cracia", meaning: "poder, gobierno", origin: "griego", original: "κράτος" }] },
+    { word: "aristocracia", definition: "Gobierno ejercido por una minoría considerada la mejor o más distinguida.", parts: [{ text: "aristo", meaning: "mejor, excelente", origin: "griego", original: "ἄριστος" }, { text: "cracia", meaning: "poder, gobierno", origin: "griego", original: "κράτος" }] },
+    { word: "teocracia", definition: "Gobierno ejercido en nombre de una divinidad.", parts: [{ text: "teo", meaning: "dios", origin: "griego", original: "θεός" }, { text: "cracia", meaning: "poder, gobierno", origin: "griego", original: "κράτος" }] },
+    { word: "cosmopolita", definition: "Persona que considera todos los países como patria suya.", parts: [{ text: "cosmo", meaning: "mundo, universo", origin: "griego", original: "κόσμος" }, { text: "polita", meaning: "ciudadano", origin: "griego", original: "πολίτης" }] },
+    { word: "astronomía", definition: "Ciencia que estudia los astros.", parts: [{ text: "astro", meaning: "estrella, astro", origin: "griego", original: "ἄστρον" }, { text: "nomía", meaning: "orden, ley", origin: "griego", original: "νομία" }] },
+    { word: "gastronomía", definition: "Arte de preparar una buena comida.", parts: [{ text: "gastro", meaning: "estómago", origin: "griego", original: "γαστήρ" }, { text: "nomía", meaning: "orden, norma", origin: "griego", original: "νομία" }] },
+    { word: "economía", definition: "Administración ordenada de los bienes y recursos.", parts: [{ text: "eco", meaning: "casa, hogar", origin: "griego", original: "οἶκος" }, { text: "nomía", meaning: "administración, norma", origin: "griego", original: "νομία" }] },
+
+    { word: "ecología", definition: "Ciencia que estudia las relaciones de los seres vivos con su entorno.", parts: [{ text: "eco", meaning: "casa, entorno", origin: "griego", original: "οἶκος" }, { text: "logía", meaning: "estudio, tratado", origin: "griego", original: "λογία" }] },
+    { word: "zoología", definition: "Ciencia que estudia los animales.", parts: [{ text: "zoo", meaning: "animal", origin: "griego", original: "ζῷον" }, { text: "logía", meaning: "estudio, tratado", origin: "griego", original: "λογία" }] },
+    { word: "ornitología", definition: "Ciencia que estudia las aves.", parts: [{ text: "ornito", meaning: "ave", origin: "griego", original: "ὄρνις" }, { text: "logía", meaning: "estudio, tratado", origin: "griego", original: "λογία" }] },
+    { word: "entomología", definition: "Ciencia que estudia los insectos.", parts: [{ text: "entomo", meaning: "insecto", origin: "griego", original: "ἔντομον" }, { text: "logía", meaning: "estudio, tratado", origin: "griego", original: "λογία" }] },
+    { word: "dermatología", definition: "Rama de la medicina que estudia la piel.", parts: [{ text: "dermato", meaning: "piel", origin: "griego", original: "δέρμα" }, { text: "logía", meaning: "estudio, tratado", origin: "griego", original: "λογία" }] },
+    { word: "neurología", definition: "Rama de la medicina que estudia el sistema nervioso.", parts: [{ text: "neuro", meaning: "nervio", origin: "griego", original: "νεῦρον" }, { text: "logía", meaning: "estudio, tratado", origin: "griego", original: "λογία" }] },
+    { word: "cardiología", definition: "Rama de la medicina que estudia el corazón.", parts: [{ text: "cardio", meaning: "corazón", origin: "griego", original: "καρδία" }, { text: "logía", meaning: "estudio, tratado", origin: "griego", original: "λογία" }] },
+    { word: "odontología", definition: "Rama de la medicina que estudia los dientes y su tratamiento.", parts: [{ text: "odonto", meaning: "diente", origin: "griego", original: "ὀδούς" }, { text: "logía", meaning: "estudio, tratado", origin: "griego", original: "λογία" }] },
+    { word: "toxicología", definition: "Ciencia que estudia los venenos y sus efectos.", parts: [{ text: "toxico", meaning: "veneno", origin: "griego", original: "τοξικόν" }, { text: "logía", meaning: "estudio, tratado", origin: "griego", original: "λογία" }] },
+    { word: "arqueología", definition: "Ciencia que estudia las sociedades del pasado por sus restos materiales.", parts: [{ text: "arqueo", meaning: "antiguo", origin: "griego", original: "ἀρχαῖος" }, { text: "logía", meaning: "estudio, tratado", origin: "griego", original: "λογία" }] },
+    { word: "morfología", definition: "Estudio de la forma y estructura de los seres vivos o de las palabras.", parts: [{ text: "morfo", meaning: "forma", origin: "griego", original: "μορφή" }, { text: "logía", meaning: "estudio, tratado", origin: "griego", original: "λογία" }] },
+    { word: "psicología", definition: "Ciencia que estudia la mente y el comportamiento.", parts: [{ text: "psico", meaning: "mente, alma", origin: "griego", original: "ψυχή" }, { text: "logía", meaning: "estudio, tratado", origin: "griego", original: "λογία" }] },
+
+    { word: "carnívoro", definition: "Que se alimenta principalmente de carne.", parts: [{ text: "carni", display: "carní", meaning: "carne", origin: "latín", original: "caro, carnis" }, { text: "voro", meaning: "que devora, que come", origin: "latín", original: "vorare" }] },
+    { word: "herbívoro", definition: "Que se alimenta de hierbas o plantas.", parts: [{ text: "herbi", display: "herbí", meaning: "hierba", origin: "latín", original: "herba" }, { text: "voro", meaning: "que devora, que come", origin: "latín", original: "vorare" }] },
+    { word: "omnívoro", definition: "Que se alimenta de toda clase de sustancias orgánicas.", parts: [{ text: "omni", display: "omní", meaning: "todo", origin: "latín", original: "omnis" }, { text: "voro", meaning: "que devora, que come", origin: "latín", original: "vorare" }] },
+    { word: "insectívoro", definition: "Que se alimenta de insectos.", parts: [{ text: "insecti", display: "insectí", meaning: "insecto", origin: "latín", original: "insectum" }, { text: "voro", meaning: "que devora, que come", origin: "latín", original: "vorare" }] },
+    { word: "acuífero", definition: "Que contiene o conduce agua.", parts: [{ text: "acui", display: "acuí", meaning: "agua", origin: "latín", original: "aqua" }, { text: "fero", meaning: "que lleva", origin: "latín", original: "ferre" }] },
+    { word: "fructífero", definition: "Que produce fruto.", parts: [{ text: "fructi", display: "fructí", meaning: "fruto", origin: "latín", original: "fructus" }, { text: "fero", meaning: "que lleva, que produce", origin: "latín", original: "ferre" }] }
   ];
-  const endings = [
-    ["logía","logía","estudio, tratado","λογία",(subject) => `Estudio de ${subject}.`],["grafía","grafía","escritura, representación","γραφία",(subject) => `Representación o descripción de ${subject}.`],["metría","metría","medida","μετρία",(subject) => `Medición relacionada con ${subject}.`],["fobia","fobia","miedo, aversión","φοβία",(subject) => `Miedo o aversión relacionado con ${subject}.`],["filia","filia","afinidad, amor","φιλία",(subject) => `Afinidad o interés por ${subject}.`],["terapia","terapia","tratamiento","θεραπεία",(subject) => `Tratamiento relacionado con ${subject}.`],["patía","patía","afección, padecimiento","πάθεια",(subject) => `Afección relacionada con ${subject}.`],["nomía","nomía","norma, orden","νομία",(subject) => `Conocimiento o sistema aplicado a ${subject}.`]
-    , ["scopia","scopia","observación, examen","σκοπία",(subject) => `Examen u observación de ${subject}.`],["scopio","scopio","instrumento para observar","σκοπεῖν",(subject) => `Instrumento para observar ${subject}.`],["mancia","mancia","adivinación","μαντεία",(subject) => `Adivinación relacionada con ${subject}.`],["cracia","cracia","poder, gobierno","κράτος",(subject) => `Sistema de poder relacionado con ${subject}.`],["tecnia","tecnia","técnica, arte","τέχνη",(subject) => `Técnica relacionada con ${subject}.`],["fonía","fonía","sonido, voz","φωνή",(subject) => `Sonido relacionado con ${subject}.`],["teca","teca","depósito, colección","θήκη",(subject) => `Colección o depósito de ${subject}.`],["genia","genia","origen, producción","γένεσις",(subject) => `Producción relacionada con ${subject}.`],["génesis","génesis","origen, formación","γένεσις",(subject) => `Formación de ${subject}.`],["grafo","grafo","escritor o trazador","γράφειν",(subject) => `Persona o instrumento que representa ${subject}.`],["logo","logo","especialista","λόγος",(subject) => `Especialista en ${subject}.`],["metro","metro","medida","μέτρον",(subject) => `Medida de ${subject}.`],["dromo","dromo","carrera, recorrido","δρόμος",(subject) => `Recorrido relacionado con ${subject}.`],["geno","geno","que produce","-γενής",(subject) => `Que produce o genera ${subject}.`],["filo","filo","afinidad","φίλος",(subject) => `Con afinidad por ${subject}.`],["fago","fago","que come","φαγεῖν",(subject) => `Que se alimenta de ${subject}.`],["fono","fono","sonido","φωνή",(subject) => `Sonido relacionado con ${subject}.`],["foro","foro","que lleva","φέρειν",(subject) => `Que porta ${subject}.`]
-  ];
-  const heritageTerms = [
-    ["álgebra","Rama de las matemáticas que opera con símbolos y cantidades.","al","el","árabe","ال"],["alcohol","Sustancia obtenida por fermentación o destilación.","kuḥl","polvo fino","árabe","كحل"],["aceite","Grasa líquida, especialmente la extraída de frutos y semillas.","az-zayt","aceite de oliva","árabe","الزيت"],["azúcar","Sustancia dulce soluble en agua.","as-sukkar","sustancia dulce cristalina","árabe","السكر"],["almohada","Pieza blanda para apoyar la cabeza al dormir.","al-mukhadda","mejilla","árabe","المخدة"],["alcalde","Persona que preside un ayuntamiento.","al-qāḍī","juez","árabe","القاضي"],["ojalá","Expresión de deseo.","in šā’ Allāh","si Dios quiere","árabe","إن شاء الله"],
-    ["guerra","Lucha armada entre grupos organizados.","werra","pelea, confusión","germánico","*werra"],["yelmo","Armadura que protegía la cabeza.","helm","protección, casco","germánico","*helmaz"],["jardín","Terreno donde se cultivan plantas ornamentales.","jardin","huerto cercado","francés","jardin"],["garaje","Lugar destinado a guardar vehículos.","garage","guardar","francés","garage"],["hotel","Establecimiento que ofrece alojamiento.","hôtel","casa de huéspedes","francés","hôtel"],["bufé","Comida servida para que cada persona se sirva.","buffet","aparador","francés","buffet"],["maquillaje","Cosmético aplicado al rostro.","maquillage","arreglo del rostro","francés","maquillage"],
-    ["tomate","Fruto rojo y jugoso usado como alimento.","tomatl","fruto hinchado","náhuatl","tomatl"],["chocolate","Alimento elaborado con cacao.","xocolātl","bebida amarga","náhuatl","xocolātl"],["aguacate","Fruto verde de pulpa cremosa.","āhuacatl","testículo","náhuatl","āhuacatl"],["coyote","Mamífero canino de América.","coyōtl","can silvestre americano","náhuatl","coyōtl"],["chile","Fruto picante de varias especies de pimiento.","chīlli","pimiento picante","náhuatl","chīlli"],
-    ["papa","Tubérculo comestible de la patata.","papa","tubérculo","quechua","papa"],["puma","Felino americano de gran tamaño.","puma","felino de montaña","quechua","puma"],["cóndor","Ave rapaz andina de gran envergadura.","kuntur","gran ave andina","quechua","kuntur"],["cancha","Terreno preparado para practicar un deporte.","kancha","recinto cercado","quechua","kancha"],["carpa","Tienda desmontable de lona.","karpa","cobertura","quechua","karpa"],
-    ["hamaca","Red o lona suspendida para descansar.","hamaca","red para dormir","taíno","hamaca"],["canoa","Embarcación ligera y estrecha.","kanoa","embarcación ligera","taíno","kanoa"],["huracán","Viento de fuerza extraordinaria.","hurakán","espíritu de la tormenta","taíno","hurakán"],["barbacoa","Parrilla para asar alimentos.","barbacoa","armazón de palos","taíno","barbacoa"],
-    ["izquierda","Lado opuesto a la derecha.","ezker","lado opuesto a la derecha","euskera","ezker"],["pizarra","Roca laminada usada para escribir.","pizarra","piedra plana","euskera","pizarra"],
-    ["fútbol","Deporte jugado principalmente con los pies.","football","balón de pie","inglés","football"],["mitin","Reunión pública de carácter político.","meeting","reunión","inglés","meeting"],["suéter","Prenda de punto para cubrir el torso.","sweater","prenda para sudar","inglés","sweater"]
-  ];
-  const latinHeritageTerms = `
-abeja|apicula|insecto productor de miel
-abogado|advocatus|persona que defiende una causa
-abrir|aperire|separar lo que estaba cerrado
-abuelo|aviolus|ascendiente de una familia
-agua|aqua|líquido esencial para la vida
-águila|aquila|ave rapaz
-alegre|alacer|persona de ánimo vivo
-alma|anima|principio vital o espiritual
-amigo|amicus|persona unida por afecto
-amor|amor|afecto intenso
-animal|animal|ser vivo que se mueve por sí mismo
-año|annus|periodo de doce meses
-árbol|arbor|planta de tronco leñoso
-arena|harena|conjunto de granos de roca
-arma|arma|instrumento de defensa o ataque
-arte|ars|actividad creadora
-ave|avis|animal con plumas y alas
-barba|barba|vello del rostro
-barco|barca|embarcación
-boca|bucca|abertura de la cara para comer y hablar
-brazo|brachium|miembro entre hombro y mano
-caballo|caballus|animal de montar
-cabello|capillus|pelo de la cabeza
-cabeza|capitia|parte superior del cuerpo
-cadena|catena|serie de eslabones
-calle|callis|vía entre edificios
-calor|calor|sensación de temperatura elevada
-campo|campus|terreno extenso fuera de poblado
-cantar|cantare|producir música con la voz
-carne|caro|parte blanda de un animal
-casa|casa|edificio para habitar
-cielo|caelum|espacio visible sobre la Tierra
-ciudad|civitas|población de gran tamaño
-claro|clarus|que tiene mucha luz
-clave|clavis|instrumento para abrir una cerradura
-color|color|impresión visual de la luz
-comer|comedere|tomar alimento
-corazón|cor|órgano principal de la circulación
-cuerpo|corpus|conjunto material de un ser
-diente|dens|pieza dura de la boca
-día|dies|periodo de veinticuatro horas
-dinero|denarius|medio de pago
-dormir|dormire|estar en reposo y sueño
-dulce|dulcis|de sabor agradable como el azúcar
-espejo|speculum|superficie que refleja imágenes
-estrella|stella|astro con luz propia
-familia|familia|grupo de parientes
-flor|flos|parte de una planta con función reproductora
-fuego|focus|materia en combustión
-gato|cattus|mamífero felino doméstico
-gente|gens|conjunto de personas
-hijo|filius|persona respecto de sus padres
-hoja|folia|órgano plano de una planta
-hombre|homo|ser humano adulto masculino
-hora|hora|unidad de sesenta minutos
-isla|insula|tierra rodeada de agua
-joven|iuvenis|persona de poca edad
-juez|iudex|persona que administra justicia
-labio|labium|borde carnoso de la boca
-lago|lacus|gran masa de agua interior
-leche|lac|líquido nutritivo de mamíferos
-ley|lex|norma establecida
-lengua|lingua|órgano de la boca y sistema de comunicación
-libro|liber|obra escrita encuadernada
-lobo|lupus|mamífero cánido salvaje
-lugar|locus|sitio determinado
-luna|luna|satélite natural de la Tierra
-luz|lux|radiación que permite ver
-madre|mater|mujer respecto de sus hijos
-mano|manus|extremo del brazo
-mar|mare|gran masa de agua salada
-mesa|mensa|mueble con tablero horizontal
-mente|mens|facultad de pensar
-miedo|metus|sensación ante un peligro
-mirar|mirari|dirigir la vista
-molino|molinum|máquina para moler
-mundo|mundus|conjunto de lo existente
-mujer|mulier|persona adulta femenina
-noche|nox|periodo sin luz solar
-nombre|nomen|palabra que identifica
-nuevo|novus|que aparece por primera vez
-nube|nubes|masa visible de vapor de agua
-ojo|oculus|órgano de la visión
-oreja|auricula|parte externa del oído
-oro|aurum|metal precioso amarillo
-padre|pater|varón respecto de sus hijos
-pared|paries|muro de un edificio
-paso|passus|movimiento al caminar
-paz|pax|situación sin conflicto
-pecho|pectus|parte frontal superior del tronco
-pez|piscis|animal acuático con branquias
-pie|pes|extremo de la pierna
-puerta|porta|abertura para entrar o salir
-pueblo|populus|conjunto de habitantes
-queso|caseus|alimento hecho con leche
-rama|ramus|división de un árbol
-rey|rex|monarca
-río|rivus|corriente natural de agua
-rueda|rota|pieza circular que gira
-sal|sal|sustancia cristalina usada como condimento
-sangre|sanguis|líquido que circula por el cuerpo
-semana|septimana|periodo de siete días
-semilla|seminia|parte de una planta capaz de germinar
-silla|sella|asiento individual
-sol|sol|estrella del sistema solar
-sueño|somnus|estado de reposo al dormir
-tabla|tabula|pieza plana de madera
-tierra|terra|suelo y planeta que habitamos
-tiempo|tempus|duración de las cosas
-toro|taurus|macho adulto del ganado vacuno
-torre|turris|edificio más alto que ancho
-uva|uva|fruto de la vid
-vaca|vacca|hembra del ganado vacuno
-valle|vallis|llanura entre montañas
-vela|vela|pieza que recibe el viento en una embarcación
-verde|viridis|color de la vegetación
-viento|ventus|aire en movimiento
-vida|vita|existencia de un ser vivo
-viejo|vetulus|de mucha edad
-vidrio|vitrum|material transparente y frágil
-vino|vinum|bebida obtenida de la uva
-voz|vox|sonido producido al hablar
-baño|balneum|acción de lavar el cuerpo
-beso|basium|contacto de los labios como muestra de afecto
-blando|blandus|que cede con facilidad al tacto
-breve|brevis|de poca duración
-burro|burricus|asno doméstico
-cama|cama|mueble para dormir
-cara|cara|parte frontal de la cabeza
-carrera|carraria|competición de velocidad
-cera|cera|sustancia producida por abejas
-cerrar|serare|impedir el paso por una abertura
-cesto|cista|recipiente para transportar objetos
-ciencia|scientia|conjunto de conocimientos ordenados
-cinco|quinque|número que sigue al cuatro
-cintura|cinctura|parte estrecha del tronco
-cocina|coquina|lugar para preparar alimentos
-columna|columna|elemento vertical de soporte
-consejo|consilium|opinión que orienta una decisión
-cuatro|quattuor|número que sigue al tres
-cuello|collum|parte que une cabeza y tronco
-culpa|culpa|responsabilidad por una falta
-dedo|digitus|cada una de las partes de la mano
-derecho|directus|recto o conforme a norma
-edad|aetas|tiempo vivido
-error|error|acción equivocada
-espalda|spatula|parte posterior del tronco
-esposa|sponsa|mujer casada
-fácil|facilis|que exige poco esfuerzo
-feliz|felix|que siente felicidad
-fiesta|festa|celebración colectiva
-figura|figura|forma exterior de algo
-fondo|fundus|parte más baja o alejada
-fruta|fructus|producto comestible de una planta
-grande|grandis|de tamaño considerable
-gracia|gratia|cualidad que agrada
-grano|granum|semilla pequeña
-hablar|fabulare|comunicarse con palabras
-hambre|fames|necesidad de comer
-hermano|germanus|persona con los mismos padres
-hierba|herba|planta pequeña de tallo tierno
-hierro|ferrum|metal duro y común
-huevo|ovum|cuerpo que contiene un embrión
-igual|aequalis|de la misma cantidad o cualidad
-invierno|hibernum|estación más fría del año
-lado|latus|cada parte lateral de algo
-largo|largus|de mucha longitud
-lavar|lavare|limpiar con agua
-leer|legere|interpretar signos escritos
-libre|liber|sin ataduras ni impedimentos
-línea|linea|sucesión continua de puntos
-llorar|plorare|derramar lágrimas
-maduro|maturus|que ha alcanzado desarrollo
-mejor|melior|superior en calidad
-menos|minus|cantidad inferior
-mes|mensis|cada una de las doce partes del año
-muerte|mors|fin de la vida
-muro|murus|pared resistente
-nariz|nasus|órgano del olfato
-negro|niger|del color más oscuro
-obra|opera|resultado de un trabajo
-ocho|octo|número que sigue al siete
-olivo|oliva|árbol que produce aceitunas
-orden|ordo|disposición organizada
-palma|palma|parte interior de la mano
-pobre|pauper|que tiene pocos recursos
-poco|paucus|en cantidad reducida
-precio|pretium|valor de una cosa
-primero|primarius|que ocupa el lugar inicial
-puro|purus|sin mezcla ni impureza
-raíz|radix|parte de la planta fijada al suelo
-red|rete|malla de hilos entrelazados
-reír|ridere|manifestar alegría con la boca
-reina|regina|mujer que gobierna un reino
-remedio|remedium|medio para aliviar un mal
-rosa|rosa|flor de pétalos perfumados
-seco|siccus|sin humedad
-seis|sex|número que sigue al cinco
-siete|septem|número que sigue al seis
-sombra|umbra|zona sin luz directa
-suave|suavis|blando o agradable al tacto
-tarde|tardus|que ocurre con demora
-techo|tectum|cubierta superior de un edificio
-tela|tela|tejido hecho con hilos
-temor|timor|miedo ante algo
-tener|tenere|poseer o sujetar
-tres|tres|número que sigue al dos
-trigo|triticum|cereal para hacer harina
-último|ultimus|que ocupa la posición final
-unidad|unitas|cualidad de ser uno
-universo|universus|conjunto de todo lo existente
-usar|usus|emplear algo
-vapor|vapor|gas producido por un líquido
-verdad|veritas|conformidad con la realidad
-verano|veranum|estación más cálida del año
-vestido|vestitus|prenda para cubrir el cuerpo
-victoria|victoria|triunfo en una contienda
-  `.trim().split("\n").map((line) => line.split("|")).filter(([word]) => !new Set([
-    "águila", "alma", "animal", "árbol", "ave", "cantar", "comer", "día", "gato", "lobo", "luz", "mano", "mar", "paso", "pecho", "pez", "rama", "río", "sal", "sol", "toro", "vela", "viento", "cama", "cara", "cesto", "fácil", "fondo", "línea", "raíz", "reír", "tela", "último", "victoria"
-  ]).has(word));
-  const rootMeanings = roots.map(([, , meaning]) => meaning);
-  const endingMeanings = endings.map(([, , meaning]) => meaning);
-  const optionsFor = (meaning, pool, offset) => [meaning, ...pool.filter((item) => item !== meaning).slice(offset % (pool.length - 3), (offset % (pool.length - 3)) + 3)];
-  const excluded = new Set(excludedWords);
-  const heritageMeanings = heritageTerms.map(([, , , meaning]) => meaning);
-  const heritageChallenges = heritageTerms
-    .filter(([word]) => isRaeVerified(word))
-    .map(([word, definition, text, meaning, origin, original], index) => ({
-      word, definition, parts: [{ text, meaning, origin, original, options: optionsFor(meaning, heritageMeanings, index) }]
-    }));
-  const latinChallenges = latinHeritageTerms.map(([word, original, meaning], index) => ({
-    word,
-    definition: `Voz patrimonial relacionada con ${meaning}.`,
-    parts: [{ text: word, meaning, origin: "latín", original, options: optionsFor(meaning, latinHeritageTerms.map(([, , item]) => item), index) }]
+
+  // Entradas individuales del catálogo. Se almacenan como palabras ya formadas:
+  // no existe ninguna regla que construya términos durante la ejecución.
+  const supplementalWords = [
+  {
+    "word": "aerología",
+    "definition": "Estudio de el aire.",
+    "parts": [
+      {
+        "text": "aero",
+        "meaning": "aire",
+        "origin": "griego",
+        "original": "ἀήρ"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "aerografía",
+    "definition": "Representación o descripción de el aire.",
+    "parts": [
+      {
+        "text": "aero",
+        "meaning": "aire",
+        "origin": "griego",
+        "original": "ἀήρ"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "aerofobia",
+    "definition": "Miedo o aversión relacionado con el aire.",
+    "parts": [
+      {
+        "text": "aero",
+        "meaning": "aire",
+        "origin": "griego",
+        "original": "ἀήρ"
+      },
+      {
+        "text": "fobia",
+        "meaning": "miedo, aversión",
+        "origin": "griego",
+        "original": "φοβία"
+      }
+    ]
+  },
+  {
+    "word": "aeroterapia",
+    "definition": "Tratamiento relacionado con el aire.",
+    "parts": [
+      {
+        "text": "aero",
+        "meaning": "aire",
+        "origin": "griego",
+        "original": "ἀήρ"
+      },
+      {
+        "text": "terapia",
+        "meaning": "tratamiento",
+        "origin": "griego",
+        "original": "θεραπεία"
+      }
+    ]
+  },
+  {
+    "word": "aeromancia",
+    "definition": "Adivinación relacionada con el aire.",
+    "parts": [
+      {
+        "text": "aero",
+        "meaning": "aire",
+        "origin": "griego",
+        "original": "ἀήρ"
+      },
+      {
+        "text": "mancia",
+        "meaning": "adivinación",
+        "origin": "griego",
+        "original": "μαντεία"
+      }
+    ]
+  },
+  {
+    "word": "aerotecnia",
+    "definition": "Técnica relacionada con el aire.",
+    "parts": [
+      {
+        "text": "aero",
+        "meaning": "aire",
+        "origin": "griego",
+        "original": "ἀήρ"
+      },
+      {
+        "text": "tecnia",
+        "meaning": "técnica, arte",
+        "origin": "griego",
+        "original": "τέχνη"
+      }
+    ]
+  },
+  {
+    "word": "aerógrafo",
+    "definition": "Persona o instrumento que representa el aire.",
+    "parts": [
+      {
+        "text": "aeró",
+        "meaning": "aire",
+        "origin": "griego",
+        "original": "ἀήρ"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "aerómetro",
+    "definition": "Medida de el aire.",
+    "parts": [
+      {
+        "text": "aeró",
+        "meaning": "aire",
+        "origin": "griego",
+        "original": "ἀήρ"
+      },
+      {
+        "text": "metro",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μέτρον"
+      }
+    ]
+  },
+  {
+    "word": "aeródromo",
+    "definition": "Recorrido relacionado con el aire.",
+    "parts": [
+      {
+        "text": "aeró",
+        "meaning": "aire",
+        "origin": "griego",
+        "original": "ἀήρ"
+      },
+      {
+        "text": "dromo",
+        "meaning": "carrera, recorrido",
+        "origin": "griego",
+        "original": "δρόμος"
+      }
+    ]
+  },
+  {
+    "word": "aerófono",
+    "definition": "Sonido relacionado con el aire.",
+    "parts": [
+      {
+        "text": "aeró",
+        "meaning": "aire",
+        "origin": "griego",
+        "original": "ἀήρ"
+      },
+      {
+        "text": "fono",
+        "meaning": "sonido",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "agrología",
+    "definition": "Estudio de el campo.",
+    "parts": [
+      {
+        "text": "agro",
+        "meaning": "campo",
+        "origin": "griego",
+        "original": "ἀγρός"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "agronomía",
+    "definition": "Conocimiento o sistema aplicado a el campo.",
+    "parts": [
+      {
+        "text": "agro",
+        "meaning": "campo",
+        "origin": "griego",
+        "original": "ἀγρός"
+      },
+      {
+        "text": "nomía",
+        "meaning": "norma, orden",
+        "origin": "griego",
+        "original": "νομία"
+      }
+    ]
+  },
+  {
+    "word": "antropología",
+    "definition": "Estudio de el ser humano.",
+    "parts": [
+      {
+        "text": "antropo",
+        "meaning": "ser humano",
+        "origin": "griego",
+        "original": "ἄνθρωπος"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "antropografía",
+    "definition": "Representación o descripción de el ser humano.",
+    "parts": [
+      {
+        "text": "antropo",
+        "meaning": "ser humano",
+        "origin": "griego",
+        "original": "ἄνθρωπος"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "antropometría",
+    "definition": "Medición relacionada con el ser humano.",
+    "parts": [
+      {
+        "text": "antropo",
+        "meaning": "ser humano",
+        "origin": "griego",
+        "original": "ἄνθρωπος"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "antropogénesis",
+    "definition": "Formación de el ser humano.",
+    "parts": [
+      {
+        "text": "antropo",
+        "meaning": "ser humano",
+        "origin": "griego",
+        "original": "ἄνθρωπος"
+      },
+      {
+        "text": "génesis",
+        "meaning": "origen, formación",
+        "origin": "griego",
+        "original": "γένεσις"
+      }
+    ]
+  },
+  {
+    "word": "antropólogo",
+    "definition": "Especialista en el ser humano.",
+    "parts": [
+      {
+        "text": "antropó",
+        "meaning": "ser humano",
+        "origin": "griego",
+        "original": "ἄνθρωπος"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "astrología",
+    "definition": "Estudio de los astros.",
+    "parts": [
+      {
+        "text": "astro",
+        "meaning": "estrella",
+        "origin": "griego",
+        "original": "ἄστρον"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "astrografía",
+    "definition": "Representación o descripción de los astros.",
+    "parts": [
+      {
+        "text": "astro",
+        "meaning": "estrella",
+        "origin": "griego",
+        "original": "ἄστρον"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "astrógrafo",
+    "definition": "Persona o instrumento que representa los astros.",
+    "parts": [
+      {
+        "text": "astró",
+        "meaning": "estrella",
+        "origin": "griego",
+        "original": "ἄστρον"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "astrólogo",
+    "definition": "Especialista en los astros.",
+    "parts": [
+      {
+        "text": "astró",
+        "meaning": "estrella",
+        "origin": "griego",
+        "original": "ἄστρον"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "autografía",
+    "definition": "Representación o descripción de uno mismo.",
+    "parts": [
+      {
+        "text": "auto",
+        "meaning": "uno mismo",
+        "origin": "griego",
+        "original": "αὐτός"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "autonomía",
+    "definition": "Conocimiento o sistema aplicado a uno mismo.",
+    "parts": [
+      {
+        "text": "auto",
+        "meaning": "uno mismo",
+        "origin": "griego",
+        "original": "αὐτός"
+      },
+      {
+        "text": "nomía",
+        "meaning": "norma, orden",
+        "origin": "griego",
+        "original": "νομία"
+      }
+    ]
+  },
+  {
+    "word": "autocracia",
+    "definition": "Sistema de poder relacionado con uno mismo.",
+    "parts": [
+      {
+        "text": "auto",
+        "meaning": "uno mismo",
+        "origin": "griego",
+        "original": "αὐτός"
+      },
+      {
+        "text": "cracia",
+        "meaning": "poder, gobierno",
+        "origin": "griego",
+        "original": "κράτος"
+      }
+    ]
+  },
+  {
+    "word": "bibliología",
+    "definition": "Estudio de los libros.",
+    "parts": [
+      {
+        "text": "biblio",
+        "meaning": "libro",
+        "origin": "griego",
+        "original": "βιβλίον"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "bibliofilia",
+    "definition": "Afinidad o interés por los libros.",
+    "parts": [
+      {
+        "text": "biblio",
+        "meaning": "libro",
+        "origin": "griego",
+        "original": "βιβλίον"
+      },
+      {
+        "text": "filia",
+        "meaning": "afinidad, amor",
+        "origin": "griego",
+        "original": "φιλία"
+      }
+    ]
+  },
+  {
+    "word": "bibliomancia",
+    "definition": "Adivinación relacionada con los libros.",
+    "parts": [
+      {
+        "text": "biblio",
+        "meaning": "libro",
+        "origin": "griego",
+        "original": "βιβλίον"
+      },
+      {
+        "text": "mancia",
+        "meaning": "adivinación",
+        "origin": "griego",
+        "original": "μαντεία"
+      }
+    ]
+  },
+  {
+    "word": "bibliógrafo",
+    "definition": "Persona o instrumento que representa los libros.",
+    "parts": [
+      {
+        "text": "biblió",
+        "meaning": "libro",
+        "origin": "griego",
+        "original": "βιβλίον"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "bibliófilo",
+    "definition": "Con afinidad por los libros.",
+    "parts": [
+      {
+        "text": "biblió",
+        "meaning": "libro",
+        "origin": "griego",
+        "original": "βιβλίον"
+      },
+      {
+        "text": "filo",
+        "meaning": "afinidad",
+        "origin": "griego",
+        "original": "φίλος"
+      }
+    ]
+  },
+  {
+    "word": "biología",
+    "definition": "Estudio de la vida.",
+    "parts": [
+      {
+        "text": "bio",
+        "meaning": "vida",
+        "origin": "griego",
+        "original": "βίος"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "biometría",
+    "definition": "Medición relacionada con la vida.",
+    "parts": [
+      {
+        "text": "bio",
+        "meaning": "vida",
+        "origin": "griego",
+        "original": "βίος"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "bioterapia",
+    "definition": "Tratamiento relacionado con la vida.",
+    "parts": [
+      {
+        "text": "bio",
+        "meaning": "vida",
+        "origin": "griego",
+        "original": "βίος"
+      },
+      {
+        "text": "terapia",
+        "meaning": "tratamiento",
+        "origin": "griego",
+        "original": "θεραπεία"
+      }
+    ]
+  },
+  {
+    "word": "biogénesis",
+    "definition": "Formación de la vida.",
+    "parts": [
+      {
+        "text": "bio",
+        "meaning": "vida",
+        "origin": "griego",
+        "original": "βίος"
+      },
+      {
+        "text": "génesis",
+        "meaning": "origen, formación",
+        "origin": "griego",
+        "original": "γένεσις"
+      }
+    ]
+  },
+  {
+    "word": "cardiografía",
+    "definition": "Representación o descripción de el corazón.",
+    "parts": [
+      {
+        "text": "cardio",
+        "meaning": "corazón",
+        "origin": "griego",
+        "original": "καρδία"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "cardiopatía",
+    "definition": "Afección relacionada con el corazón.",
+    "parts": [
+      {
+        "text": "cardio",
+        "meaning": "corazón",
+        "origin": "griego",
+        "original": "καρδία"
+      },
+      {
+        "text": "patía",
+        "meaning": "afección, padecimiento",
+        "origin": "griego",
+        "original": "πάθεια"
+      }
+    ]
+  },
+  {
+    "word": "cardiógrafo",
+    "definition": "Persona o instrumento que representa el corazón.",
+    "parts": [
+      {
+        "text": "cardió",
+        "meaning": "corazón",
+        "origin": "griego",
+        "original": "καρδία"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "cardiólogo",
+    "definition": "Especialista en el corazón.",
+    "parts": [
+      {
+        "text": "cardió",
+        "meaning": "corazón",
+        "origin": "griego",
+        "original": "καρδία"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "citología",
+    "definition": "Estudio de las células.",
+    "parts": [
+      {
+        "text": "cito",
+        "meaning": "célula",
+        "origin": "griego",
+        "original": "κύτος"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "citólogo",
+    "definition": "Especialista en las células.",
+    "parts": [
+      {
+        "text": "citó",
+        "meaning": "célula",
+        "origin": "griego",
+        "original": "κύτος"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "citófono",
+    "definition": "Sonido relacionado con las células.",
+    "parts": [
+      {
+        "text": "citó",
+        "meaning": "célula",
+        "origin": "griego",
+        "original": "κύτος"
+      },
+      {
+        "text": "fono",
+        "meaning": "sonido",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "cronología",
+    "definition": "Estudio de el tiempo.",
+    "parts": [
+      {
+        "text": "crono",
+        "meaning": "tiempo",
+        "origin": "griego",
+        "original": "χρόνος"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "cronografía",
+    "definition": "Representación o descripción de el tiempo.",
+    "parts": [
+      {
+        "text": "crono",
+        "meaning": "tiempo",
+        "origin": "griego",
+        "original": "χρόνος"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "cronometría",
+    "definition": "Medición relacionada con el tiempo.",
+    "parts": [
+      {
+        "text": "crono",
+        "meaning": "tiempo",
+        "origin": "griego",
+        "original": "χρόνος"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "cronógrafo",
+    "definition": "Persona o instrumento que representa el tiempo.",
+    "parts": [
+      {
+        "text": "cronó",
+        "meaning": "tiempo",
+        "origin": "griego",
+        "original": "χρόνος"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "cronólogo",
+    "definition": "Especialista en el tiempo.",
+    "parts": [
+      {
+        "text": "cronó",
+        "meaning": "tiempo",
+        "origin": "griego",
+        "original": "χρόνος"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "demografía",
+    "definition": "Representación o descripción de el pueblo.",
+    "parts": [
+      {
+        "text": "demo",
+        "meaning": "pueblo",
+        "origin": "griego",
+        "original": "δῆμος"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "demoscopia",
+    "definition": "Examen u observación de el pueblo.",
+    "parts": [
+      {
+        "text": "demo",
+        "meaning": "pueblo",
+        "origin": "griego",
+        "original": "δῆμος"
+      },
+      {
+        "text": "scopia",
+        "meaning": "observación, examen",
+        "origin": "griego",
+        "original": "σκοπία"
+      }
+    ]
+  },
+  {
+    "word": "demógrafo",
+    "definition": "Persona o instrumento que representa el pueblo.",
+    "parts": [
+      {
+        "text": "demó",
+        "meaning": "pueblo",
+        "origin": "griego",
+        "original": "δῆμος"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "ecografía",
+    "definition": "Representación o descripción de el entorno.",
+    "parts": [
+      {
+        "text": "eco",
+        "meaning": "casa, entorno",
+        "origin": "griego",
+        "original": "οἶκος"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "ecógrafo",
+    "definition": "Persona o instrumento que representa el entorno.",
+    "parts": [
+      {
+        "text": "ecó",
+        "meaning": "casa, entorno",
+        "origin": "griego",
+        "original": "οἶκος"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "ecólogo",
+    "definition": "Especialista en el entorno.",
+    "parts": [
+      {
+        "text": "ecó",
+        "meaning": "casa, entorno",
+        "origin": "griego",
+        "original": "οἶκος"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "electrometría",
+    "definition": "Medición relacionada con la electricidad.",
+    "parts": [
+      {
+        "text": "electro",
+        "meaning": "ámbar",
+        "origin": "griego",
+        "original": "ἤλεκτρον"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "electroterapia",
+    "definition": "Tratamiento relacionado con la electricidad.",
+    "parts": [
+      {
+        "text": "electro",
+        "meaning": "ámbar",
+        "origin": "griego",
+        "original": "ἤλεκτρον"
+      },
+      {
+        "text": "terapia",
+        "meaning": "tratamiento",
+        "origin": "griego",
+        "original": "θεραπεία"
+      }
+    ]
+  },
+  {
+    "word": "electroscopio",
+    "definition": "Instrumento para observar la electricidad.",
+    "parts": [
+      {
+        "text": "electro",
+        "meaning": "ámbar",
+        "origin": "griego",
+        "original": "ἤλεκτρον"
+      },
+      {
+        "text": "scopio",
+        "meaning": "instrumento para observar",
+        "origin": "griego",
+        "original": "σκοπεῖν"
+      }
+    ]
+  },
+  {
+    "word": "electrotecnia",
+    "definition": "Técnica relacionada con la electricidad.",
+    "parts": [
+      {
+        "text": "electro",
+        "meaning": "ámbar",
+        "origin": "griego",
+        "original": "ἤλεκτρον"
+      },
+      {
+        "text": "tecnia",
+        "meaning": "técnica, arte",
+        "origin": "griego",
+        "original": "τέχνη"
+      }
+    ]
+  },
+  {
+    "word": "electrómetro",
+    "definition": "Medida de la electricidad.",
+    "parts": [
+      {
+        "text": "electró",
+        "meaning": "ámbar",
+        "origin": "griego",
+        "original": "ἤλεκτρον"
+      },
+      {
+        "text": "metro",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μέτρον"
+      }
+    ]
+  },
+  {
+    "word": "electrógeno",
+    "definition": "Que produce o genera la electricidad.",
+    "parts": [
+      {
+        "text": "electró",
+        "meaning": "ámbar",
+        "origin": "griego",
+        "original": "ἤλεκτρον"
+      },
+      {
+        "text": "geno",
+        "meaning": "que produce",
+        "origin": "griego",
+        "original": "-γενής"
+      }
+    ]
+  },
+  {
+    "word": "electróforo",
+    "definition": "Que porta la electricidad.",
+    "parts": [
+      {
+        "text": "electró",
+        "meaning": "ámbar",
+        "origin": "griego",
+        "original": "ἤλεκτρον"
+      },
+      {
+        "text": "foro",
+        "meaning": "que lleva",
+        "origin": "griego",
+        "original": "φέρειν"
+      }
+    ]
+  },
+  {
+    "word": "endoscopia",
+    "definition": "Examen u observación de el interior.",
+    "parts": [
+      {
+        "text": "endo",
+        "meaning": "dentro",
+        "origin": "griego",
+        "original": "ἔνδον"
+      },
+      {
+        "text": "scopia",
+        "meaning": "observación, examen",
+        "origin": "griego",
+        "original": "σκοπία"
+      }
+    ]
+  },
+  {
+    "word": "endogénesis",
+    "definition": "Formación de el interior.",
+    "parts": [
+      {
+        "text": "endo",
+        "meaning": "dentro",
+        "origin": "griego",
+        "original": "ἔνδον"
+      },
+      {
+        "text": "génesis",
+        "meaning": "origen, formación",
+        "origin": "griego",
+        "original": "γένεσις"
+      }
+    ]
+  },
+  {
+    "word": "endógeno",
+    "definition": "Que produce o genera el interior.",
+    "parts": [
+      {
+        "text": "endó",
+        "meaning": "dentro",
+        "origin": "griego",
+        "original": "ἔνδον"
+      },
+      {
+        "text": "geno",
+        "meaning": "que produce",
+        "origin": "griego",
+        "original": "-γενής"
+      }
+    ]
+  },
+  {
+    "word": "entomólogo",
+    "definition": "Especialista en los insectos.",
+    "parts": [
+      {
+        "text": "entomó",
+        "meaning": "insecto",
+        "origin": "griego",
+        "original": "ἔντομον"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "entomófilo",
+    "definition": "Con afinidad por los insectos.",
+    "parts": [
+      {
+        "text": "entomó",
+        "meaning": "insecto",
+        "origin": "griego",
+        "original": "ἔντομον"
+      },
+      {
+        "text": "filo",
+        "meaning": "afinidad",
+        "origin": "griego",
+        "original": "φίλος"
+      }
+    ]
+  },
+  {
+    "word": "etnología",
+    "definition": "Estudio de los pueblos.",
+    "parts": [
+      {
+        "text": "etno",
+        "meaning": "pueblo, grupo",
+        "origin": "griego",
+        "original": "ἔθνος"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "etnógrafo",
+    "definition": "Persona o instrumento que representa los pueblos.",
+    "parts": [
+      {
+        "text": "etnó",
+        "meaning": "pueblo, grupo",
+        "origin": "griego",
+        "original": "ἔθνος"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "etnólogo",
+    "definition": "Especialista en los pueblos.",
+    "parts": [
+      {
+        "text": "etnó",
+        "meaning": "pueblo, grupo",
+        "origin": "griego",
+        "original": "ἔθνος"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "fotometría",
+    "definition": "Medición relacionada con la luz.",
+    "parts": [
+      {
+        "text": "foto",
+        "meaning": "luz",
+        "origin": "griego",
+        "original": "φῶς"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "fotofobia",
+    "definition": "Miedo o aversión relacionado con la luz.",
+    "parts": [
+      {
+        "text": "foto",
+        "meaning": "luz",
+        "origin": "griego",
+        "original": "φῶς"
+      },
+      {
+        "text": "fobia",
+        "meaning": "miedo, aversión",
+        "origin": "griego",
+        "original": "φοβία"
+      }
+    ]
+  },
+  {
+    "word": "fototerapia",
+    "definition": "Tratamiento relacionado con la luz.",
+    "parts": [
+      {
+        "text": "foto",
+        "meaning": "luz",
+        "origin": "griego",
+        "original": "φῶς"
+      },
+      {
+        "text": "terapia",
+        "meaning": "tratamiento",
+        "origin": "griego",
+        "original": "θεραπεία"
+      }
+    ]
+  },
+  {
+    "word": "fototeca",
+    "definition": "Colección o depósito de la luz.",
+    "parts": [
+      {
+        "text": "foto",
+        "meaning": "luz",
+        "origin": "griego",
+        "original": "φῶς"
+      },
+      {
+        "text": "teca",
+        "meaning": "depósito, colección",
+        "origin": "griego",
+        "original": "θήκη"
+      }
+    ]
+  },
+  {
+    "word": "fotogenia",
+    "definition": "Producción relacionada con la luz.",
+    "parts": [
+      {
+        "text": "foto",
+        "meaning": "luz",
+        "origin": "griego",
+        "original": "φῶς"
+      },
+      {
+        "text": "genia",
+        "meaning": "origen, producción",
+        "origin": "griego",
+        "original": "γένεσις"
+      }
+    ]
+  },
+  {
+    "word": "fotogénesis",
+    "definition": "Formación de la luz.",
+    "parts": [
+      {
+        "text": "foto",
+        "meaning": "luz",
+        "origin": "griego",
+        "original": "φῶς"
+      },
+      {
+        "text": "génesis",
+        "meaning": "origen, formación",
+        "origin": "griego",
+        "original": "γένεσις"
+      }
+    ]
+  },
+  {
+    "word": "fotógrafo",
+    "definition": "Persona o instrumento que representa la luz.",
+    "parts": [
+      {
+        "text": "fotó",
+        "meaning": "luz",
+        "origin": "griego",
+        "original": "φῶς"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "fotómetro",
+    "definition": "Medida de la luz.",
+    "parts": [
+      {
+        "text": "fotó",
+        "meaning": "luz",
+        "origin": "griego",
+        "original": "φῶς"
+      },
+      {
+        "text": "metro",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μέτρον"
+      }
+    ]
+  },
+  {
+    "word": "fonología",
+    "definition": "Estudio de el sonido.",
+    "parts": [
+      {
+        "text": "fono",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "fonografía",
+    "definition": "Representación o descripción de el sonido.",
+    "parts": [
+      {
+        "text": "fono",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "fonometría",
+    "definition": "Medición relacionada con el sonido.",
+    "parts": [
+      {
+        "text": "fono",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "fonotecnia",
+    "definition": "Técnica relacionada con el sonido.",
+    "parts": [
+      {
+        "text": "fono",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      },
+      {
+        "text": "tecnia",
+        "meaning": "técnica, arte",
+        "origin": "griego",
+        "original": "τέχνη"
+      }
+    ]
+  },
+  {
+    "word": "fonoteca",
+    "definition": "Colección o depósito de el sonido.",
+    "parts": [
+      {
+        "text": "fono",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      },
+      {
+        "text": "teca",
+        "meaning": "depósito, colección",
+        "origin": "griego",
+        "original": "θήκη"
+      }
+    ]
+  },
+  {
+    "word": "fonólogo",
+    "definition": "Especialista en el sonido.",
+    "parts": [
+      {
+        "text": "fonó",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "fonómetro",
+    "definition": "Medida de el sonido.",
+    "parts": [
+      {
+        "text": "fonó",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      },
+      {
+        "text": "metro",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μέτρον"
+      }
+    ]
+  },
+  {
+    "word": "fitología",
+    "definition": "Estudio de las plantas.",
+    "parts": [
+      {
+        "text": "fito",
+        "meaning": "planta",
+        "origin": "griego",
+        "original": "φυτόν"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "fitografía",
+    "definition": "Representación o descripción de las plantas.",
+    "parts": [
+      {
+        "text": "fito",
+        "meaning": "planta",
+        "origin": "griego",
+        "original": "φυτόν"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "fitoterapia",
+    "definition": "Tratamiento relacionado con las plantas.",
+    "parts": [
+      {
+        "text": "fito",
+        "meaning": "planta",
+        "origin": "griego",
+        "original": "φυτόν"
+      },
+      {
+        "text": "terapia",
+        "meaning": "tratamiento",
+        "origin": "griego",
+        "original": "θεραπεία"
+      }
+    ]
+  },
+  {
+    "word": "fitógrafo",
+    "definition": "Persona o instrumento que representa las plantas.",
+    "parts": [
+      {
+        "text": "fitó",
+        "meaning": "planta",
+        "origin": "griego",
+        "original": "φυτόν"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "gastropatía",
+    "definition": "Afección relacionada con el estómago.",
+    "parts": [
+      {
+        "text": "gastro",
+        "meaning": "estómago",
+        "origin": "griego",
+        "original": "γαστήρ"
+      },
+      {
+        "text": "patía",
+        "meaning": "afección, padecimiento",
+        "origin": "griego",
+        "original": "πάθεια"
+      }
+    ]
+  },
+  {
+    "word": "gastroscopia",
+    "definition": "Examen u observación de el estómago.",
+    "parts": [
+      {
+        "text": "gastro",
+        "meaning": "estómago",
+        "origin": "griego",
+        "original": "γαστήρ"
+      },
+      {
+        "text": "scopia",
+        "meaning": "observación, examen",
+        "origin": "griego",
+        "original": "σκοπία"
+      }
+    ]
+  },
+  {
+    "word": "gastroscopio",
+    "definition": "Instrumento para observar el estómago.",
+    "parts": [
+      {
+        "text": "gastro",
+        "meaning": "estómago",
+        "origin": "griego",
+        "original": "γαστήρ"
+      },
+      {
+        "text": "scopio",
+        "meaning": "instrumento para observar",
+        "origin": "griego",
+        "original": "σκοπεῖν"
+      }
+    ]
+  },
+  {
+    "word": "geología",
+    "definition": "Estudio de la Tierra.",
+    "parts": [
+      {
+        "text": "geo",
+        "meaning": "tierra",
+        "origin": "griego",
+        "original": "γῆ"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "geometría",
+    "definition": "Medición relacionada con la Tierra.",
+    "parts": [
+      {
+        "text": "geo",
+        "meaning": "tierra",
+        "origin": "griego",
+        "original": "γῆ"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "geonomía",
+    "definition": "Conocimiento o sistema aplicado a la Tierra.",
+    "parts": [
+      {
+        "text": "geo",
+        "meaning": "tierra",
+        "origin": "griego",
+        "original": "γῆ"
+      },
+      {
+        "text": "nomía",
+        "meaning": "norma, orden",
+        "origin": "griego",
+        "original": "νομία"
+      }
+    ]
+  },
+  {
+    "word": "geomancia",
+    "definition": "Adivinación relacionada con la Tierra.",
+    "parts": [
+      {
+        "text": "geo",
+        "meaning": "tierra",
+        "origin": "griego",
+        "original": "γῆ"
+      },
+      {
+        "text": "mancia",
+        "meaning": "adivinación",
+        "origin": "griego",
+        "original": "μαντεία"
+      }
+    ]
+  },
+  {
+    "word": "geotecnia",
+    "definition": "Técnica relacionada con la Tierra.",
+    "parts": [
+      {
+        "text": "geo",
+        "meaning": "tierra",
+        "origin": "griego",
+        "original": "γῆ"
+      },
+      {
+        "text": "tecnia",
+        "meaning": "técnica, arte",
+        "origin": "griego",
+        "original": "τέχνη"
+      }
+    ]
+  },
+  {
+    "word": "geogenia",
+    "definition": "Producción relacionada con la Tierra.",
+    "parts": [
+      {
+        "text": "geo",
+        "meaning": "tierra",
+        "origin": "griego",
+        "original": "γῆ"
+      },
+      {
+        "text": "genia",
+        "meaning": "origen, producción",
+        "origin": "griego",
+        "original": "γένεσις"
+      }
+    ]
+  },
+  {
+    "word": "gerontología",
+    "definition": "Estudio de la vejez.",
+    "parts": [
+      {
+        "text": "geronto",
+        "meaning": "anciano",
+        "origin": "griego",
+        "original": "γέρων"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "gerontocracia",
+    "definition": "Sistema de poder relacionado con la vejez.",
+    "parts": [
+      {
+        "text": "geronto",
+        "meaning": "anciano",
+        "origin": "griego",
+        "original": "γέρων"
+      },
+      {
+        "text": "cracia",
+        "meaning": "poder, gobierno",
+        "origin": "griego",
+        "original": "κράτος"
+      }
+    ]
+  },
+  {
+    "word": "gerontólogo",
+    "definition": "Especialista en la vejez.",
+    "parts": [
+      {
+        "text": "gerontó",
+        "meaning": "anciano",
+        "origin": "griego",
+        "original": "γέρων"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "ginecología",
+    "definition": "Estudio de la mujer.",
+    "parts": [
+      {
+        "text": "gineco",
+        "meaning": "mujer",
+        "origin": "griego",
+        "original": "γυνή"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "ginecocracia",
+    "definition": "Sistema de poder relacionado con la mujer.",
+    "parts": [
+      {
+        "text": "gineco",
+        "meaning": "mujer",
+        "origin": "griego",
+        "original": "γυνή"
+      },
+      {
+        "text": "cracia",
+        "meaning": "poder, gobierno",
+        "origin": "griego",
+        "original": "κράτος"
+      }
+    ]
+  },
+  {
+    "word": "ginecólogo",
+    "definition": "Especialista en la mujer.",
+    "parts": [
+      {
+        "text": "ginecó",
+        "meaning": "mujer",
+        "origin": "griego",
+        "original": "γυνή"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "heliografía",
+    "definition": "Representación o descripción de el Sol.",
+    "parts": [
+      {
+        "text": "helio",
+        "meaning": "sol",
+        "origin": "griego",
+        "original": "ἥλιος"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "helioterapia",
+    "definition": "Tratamiento relacionado con el Sol.",
+    "parts": [
+      {
+        "text": "helio",
+        "meaning": "sol",
+        "origin": "griego",
+        "original": "ἥλιος"
+      },
+      {
+        "text": "terapia",
+        "meaning": "tratamiento",
+        "origin": "griego",
+        "original": "θεραπεία"
+      }
+    ]
+  },
+  {
+    "word": "hemofilia",
+    "definition": "Afinidad o interés por la sangre.",
+    "parts": [
+      {
+        "text": "hemo",
+        "meaning": "sangre",
+        "origin": "griego",
+        "original": "αἷμα"
+      },
+      {
+        "text": "filia",
+        "meaning": "afinidad, amor",
+        "origin": "griego",
+        "original": "φιλία"
+      }
+    ]
+  },
+  {
+    "word": "hemopatía",
+    "definition": "Afección relacionada con la sangre.",
+    "parts": [
+      {
+        "text": "hemo",
+        "meaning": "sangre",
+        "origin": "griego",
+        "original": "αἷμα"
+      },
+      {
+        "text": "patía",
+        "meaning": "afección, padecimiento",
+        "origin": "griego",
+        "original": "πάθεια"
+      }
+    ]
+  },
+  {
+    "word": "hepatología",
+    "definition": "Estudio de el hígado.",
+    "parts": [
+      {
+        "text": "hepato",
+        "meaning": "hígado",
+        "origin": "griego",
+        "original": "ἧπαρ"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "hepatopatía",
+    "definition": "Afección relacionada con el hígado.",
+    "parts": [
+      {
+        "text": "hepato",
+        "meaning": "hígado",
+        "origin": "griego",
+        "original": "ἧπαρ"
+      },
+      {
+        "text": "patía",
+        "meaning": "afección, padecimiento",
+        "origin": "griego",
+        "original": "πάθεια"
+      }
+    ]
+  },
+  {
+    "word": "hepatólogo",
+    "definition": "Especialista en el hígado.",
+    "parts": [
+      {
+        "text": "hepató",
+        "meaning": "hígado",
+        "origin": "griego",
+        "original": "ἧπαρ"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "heteronomía",
+    "definition": "Conocimiento o sistema aplicado a lo diferente.",
+    "parts": [
+      {
+        "text": "hetero",
+        "meaning": "diferente",
+        "origin": "griego",
+        "original": "ἕτερος"
+      },
+      {
+        "text": "nomía",
+        "meaning": "norma, orden",
+        "origin": "griego",
+        "original": "νομία"
+      }
+    ]
+  },
+  {
+    "word": "heteromancia",
+    "definition": "Adivinación relacionada con lo diferente.",
+    "parts": [
+      {
+        "text": "hetero",
+        "meaning": "diferente",
+        "origin": "griego",
+        "original": "ἕτερος"
+      },
+      {
+        "text": "mancia",
+        "meaning": "adivinación",
+        "origin": "griego",
+        "original": "μαντεία"
+      }
+    ]
+  },
+  {
+    "word": "hidrología",
+    "definition": "Estudio de el agua.",
+    "parts": [
+      {
+        "text": "hidro",
+        "meaning": "agua",
+        "origin": "griego",
+        "original": "ὕδωρ"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "hidrometría",
+    "definition": "Medición relacionada con el agua.",
+    "parts": [
+      {
+        "text": "hidro",
+        "meaning": "agua",
+        "origin": "griego",
+        "original": "ὕδωρ"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "hidrofobia",
+    "definition": "Miedo o aversión relacionado con el agua.",
+    "parts": [
+      {
+        "text": "hidro",
+        "meaning": "agua",
+        "origin": "griego",
+        "original": "ὕδωρ"
+      },
+      {
+        "text": "fobia",
+        "meaning": "miedo, aversión",
+        "origin": "griego",
+        "original": "φοβία"
+      }
+    ]
+  },
+  {
+    "word": "hidroterapia",
+    "definition": "Tratamiento relacionado con el agua.",
+    "parts": [
+      {
+        "text": "hidro",
+        "meaning": "agua",
+        "origin": "griego",
+        "original": "ὕδωρ"
+      },
+      {
+        "text": "terapia",
+        "meaning": "tratamiento",
+        "origin": "griego",
+        "original": "θεραπεία"
+      }
+    ]
+  },
+  {
+    "word": "hidropatía",
+    "definition": "Afección relacionada con el agua.",
+    "parts": [
+      {
+        "text": "hidro",
+        "meaning": "agua",
+        "origin": "griego",
+        "original": "ὕδωρ"
+      },
+      {
+        "text": "patía",
+        "meaning": "afección, padecimiento",
+        "origin": "griego",
+        "original": "πάθεια"
+      }
+    ]
+  },
+  {
+    "word": "hidroscopia",
+    "definition": "Examen u observación de el agua.",
+    "parts": [
+      {
+        "text": "hidro",
+        "meaning": "agua",
+        "origin": "griego",
+        "original": "ὕδωρ"
+      },
+      {
+        "text": "scopia",
+        "meaning": "observación, examen",
+        "origin": "griego",
+        "original": "σκοπία"
+      }
+    ]
+  },
+  {
+    "word": "hidromancia",
+    "definition": "Adivinación relacionada con el agua.",
+    "parts": [
+      {
+        "text": "hidro",
+        "meaning": "agua",
+        "origin": "griego",
+        "original": "ὕδωρ"
+      },
+      {
+        "text": "mancia",
+        "meaning": "adivinación",
+        "origin": "griego",
+        "original": "μαντεία"
+      }
+    ]
+  },
+  {
+    "word": "hidrotecnia",
+    "definition": "Técnica relacionada con el agua.",
+    "parts": [
+      {
+        "text": "hidro",
+        "meaning": "agua",
+        "origin": "griego",
+        "original": "ὕδωρ"
+      },
+      {
+        "text": "tecnia",
+        "meaning": "técnica, arte",
+        "origin": "griego",
+        "original": "τέχνη"
+      }
+    ]
+  },
+  {
+    "word": "hidrógrafo",
+    "definition": "Persona o instrumento que representa el agua.",
+    "parts": [
+      {
+        "text": "hidró",
+        "meaning": "agua",
+        "origin": "griego",
+        "original": "ὕδωρ"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "hidrólogo",
+    "definition": "Especialista en el agua.",
+    "parts": [
+      {
+        "text": "hidró",
+        "meaning": "agua",
+        "origin": "griego",
+        "original": "ὕδωρ"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "hidrógeno",
+    "definition": "Que produce o genera el agua.",
+    "parts": [
+      {
+        "text": "hidró",
+        "meaning": "agua",
+        "origin": "griego",
+        "original": "ὕδωρ"
+      },
+      {
+        "text": "geno",
+        "meaning": "que produce",
+        "origin": "griego",
+        "original": "-γενής"
+      }
+    ]
+  },
+  {
+    "word": "hidrófilo",
+    "definition": "Con afinidad por el agua.",
+    "parts": [
+      {
+        "text": "hidró",
+        "meaning": "agua",
+        "origin": "griego",
+        "original": "ὕδωρ"
+      },
+      {
+        "text": "filo",
+        "meaning": "afinidad",
+        "origin": "griego",
+        "original": "φίλος"
+      }
+    ]
+  },
+  {
+    "word": "hidrófono",
+    "definition": "Sonido relacionado con el agua.",
+    "parts": [
+      {
+        "text": "hidró",
+        "meaning": "agua",
+        "origin": "griego",
+        "original": "ὕδωρ"
+      },
+      {
+        "text": "fono",
+        "meaning": "sonido",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "ictiología",
+    "definition": "Estudio de los peces.",
+    "parts": [
+      {
+        "text": "ictio",
+        "meaning": "pez",
+        "origin": "griego",
+        "original": "ἰχθύς"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "ictiografía",
+    "definition": "Representación o descripción de los peces.",
+    "parts": [
+      {
+        "text": "ictio",
+        "meaning": "pez",
+        "origin": "griego",
+        "original": "ἰχθύς"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "ictiólogo",
+    "definition": "Especialista en los peces.",
+    "parts": [
+      {
+        "text": "ictió",
+        "meaning": "pez",
+        "origin": "griego",
+        "original": "ἰχθύς"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "iconología",
+    "definition": "Estudio de las imágenes.",
+    "parts": [
+      {
+        "text": "icono",
+        "meaning": "imagen",
+        "origin": "griego",
+        "original": "εἰκών"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "iconografía",
+    "definition": "Representación o descripción de las imágenes.",
+    "parts": [
+      {
+        "text": "icono",
+        "meaning": "imagen",
+        "origin": "griego",
+        "original": "εἰκών"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "iconoscopio",
+    "definition": "Instrumento para observar las imágenes.",
+    "parts": [
+      {
+        "text": "icono",
+        "meaning": "imagen",
+        "origin": "griego",
+        "original": "εἰκών"
+      },
+      {
+        "text": "scopio",
+        "meaning": "instrumento para observar",
+        "origin": "griego",
+        "original": "σκοπεῖν"
+      }
+    ]
+  },
+  {
+    "word": "iconólogo",
+    "definition": "Especialista en las imágenes.",
+    "parts": [
+      {
+        "text": "iconó",
+        "meaning": "imagen",
+        "origin": "griego",
+        "original": "εἰκών"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "lexicología",
+    "definition": "Estudio de las palabras.",
+    "parts": [
+      {
+        "text": "lexico",
+        "meaning": "palabra",
+        "origin": "griego",
+        "original": "λέξις"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "lexicógrafo",
+    "definition": "Persona o instrumento que representa las palabras.",
+    "parts": [
+      {
+        "text": "lexicó",
+        "meaning": "palabra",
+        "origin": "griego",
+        "original": "λέξις"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "lexicólogo",
+    "definition": "Especialista en las palabras.",
+    "parts": [
+      {
+        "text": "lexicó",
+        "meaning": "palabra",
+        "origin": "griego",
+        "original": "λέξις"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "litología",
+    "definition": "Estudio de las piedras.",
+    "parts": [
+      {
+        "text": "lito",
+        "meaning": "piedra",
+        "origin": "griego",
+        "original": "λίθος"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "litografía",
+    "definition": "Representación o descripción de las piedras.",
+    "parts": [
+      {
+        "text": "lito",
+        "meaning": "piedra",
+        "origin": "griego",
+        "original": "λίθος"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "litógrafo",
+    "definition": "Persona o instrumento que representa las piedras.",
+    "parts": [
+      {
+        "text": "litó",
+        "meaning": "piedra",
+        "origin": "griego",
+        "original": "λίθος"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "litólogo",
+    "definition": "Especialista en las piedras.",
+    "parts": [
+      {
+        "text": "litó",
+        "meaning": "piedra",
+        "origin": "griego",
+        "original": "λίθος"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "litófago",
+    "definition": "Que se alimenta de las piedras.",
+    "parts": [
+      {
+        "text": "litó",
+        "meaning": "piedra",
+        "origin": "griego",
+        "original": "λίθος"
+      },
+      {
+        "text": "fago",
+        "meaning": "que come",
+        "origin": "griego",
+        "original": "φαγεῖν"
+      }
+    ]
+  },
+  {
+    "word": "micrografía",
+    "definition": "Representación o descripción de lo pequeño.",
+    "parts": [
+      {
+        "text": "micro",
+        "meaning": "pequeño",
+        "origin": "griego",
+        "original": "μικρός"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "microscopia",
+    "definition": "Examen u observación de lo pequeño.",
+    "parts": [
+      {
+        "text": "micro",
+        "meaning": "pequeño",
+        "origin": "griego",
+        "original": "μικρός"
+      },
+      {
+        "text": "scopia",
+        "meaning": "observación, examen",
+        "origin": "griego",
+        "original": "σκοπία"
+      }
+    ]
+  },
+  {
+    "word": "micrógrafo",
+    "definition": "Persona o instrumento que representa lo pequeño.",
+    "parts": [
+      {
+        "text": "micró",
+        "meaning": "pequeño",
+        "origin": "griego",
+        "original": "μικρός"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "micrómetro",
+    "definition": "Medida de lo pequeño.",
+    "parts": [
+      {
+        "text": "micró",
+        "meaning": "pequeño",
+        "origin": "griego",
+        "original": "μικρός"
+      },
+      {
+        "text": "metro",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μέτρον"
+      }
+    ]
+  },
+  {
+    "word": "micrófono",
+    "definition": "Sonido relacionado con lo pequeño.",
+    "parts": [
+      {
+        "text": "micró",
+        "meaning": "pequeño",
+        "origin": "griego",
+        "original": "μικρός"
+      },
+      {
+        "text": "fono",
+        "meaning": "sonido",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "mitología",
+    "definition": "Estudio de los relatos tradicionales.",
+    "parts": [
+      {
+        "text": "mito",
+        "meaning": "relato tradicional",
+        "origin": "griego",
+        "original": "μῦθος"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "mitografía",
+    "definition": "Representación o descripción de los relatos tradicionales.",
+    "parts": [
+      {
+        "text": "mito",
+        "meaning": "relato tradicional",
+        "origin": "griego",
+        "original": "μῦθος"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "mitógrafo",
+    "definition": "Persona o instrumento que representa los relatos tradicionales.",
+    "parts": [
+      {
+        "text": "mitó",
+        "meaning": "relato tradicional",
+        "origin": "griego",
+        "original": "μῦθος"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "mitólogo",
+    "definition": "Especialista en los relatos tradicionales.",
+    "parts": [
+      {
+        "text": "mitó",
+        "meaning": "relato tradicional",
+        "origin": "griego",
+        "original": "μῦθος"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "morfometría",
+    "definition": "Medición relacionada con las formas.",
+    "parts": [
+      {
+        "text": "morfo",
+        "meaning": "forma",
+        "origin": "griego",
+        "original": "μορφή"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "morfólogo",
+    "definition": "Especialista en las formas.",
+    "parts": [
+      {
+        "text": "morfó",
+        "meaning": "forma",
+        "origin": "griego",
+        "original": "μορφή"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "neuropatía",
+    "definition": "Afección relacionada con el sistema nervioso.",
+    "parts": [
+      {
+        "text": "neuro",
+        "meaning": "nervio",
+        "origin": "griego",
+        "original": "νεῦρον"
+      },
+      {
+        "text": "patía",
+        "meaning": "afección, padecimiento",
+        "origin": "griego",
+        "original": "πάθεια"
+      }
+    ]
+  },
+  {
+    "word": "neurólogo",
+    "definition": "Especialista en el sistema nervioso.",
+    "parts": [
+      {
+        "text": "neuró",
+        "meaning": "nervio",
+        "origin": "griego",
+        "original": "νεῦρον"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "odontólogo",
+    "definition": "Especialista en los dientes.",
+    "parts": [
+      {
+        "text": "odontó",
+        "meaning": "diente",
+        "origin": "griego",
+        "original": "ὀδούς"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "oncología",
+    "definition": "Estudio de los tumores.",
+    "parts": [
+      {
+        "text": "onco",
+        "meaning": "masa, tumor",
+        "origin": "griego",
+        "original": "ὄγκος"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "oncogénesis",
+    "definition": "Formación de los tumores.",
+    "parts": [
+      {
+        "text": "onco",
+        "meaning": "masa, tumor",
+        "origin": "griego",
+        "original": "ὄγκος"
+      },
+      {
+        "text": "génesis",
+        "meaning": "origen, formación",
+        "origin": "griego",
+        "original": "γένεσις"
+      }
+    ]
+  },
+  {
+    "word": "oncólogo",
+    "definition": "Especialista en los tumores.",
+    "parts": [
+      {
+        "text": "oncó",
+        "meaning": "masa, tumor",
+        "origin": "griego",
+        "original": "ὄγκος"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "ornitomancia",
+    "definition": "Adivinación relacionada con las aves.",
+    "parts": [
+      {
+        "text": "ornito",
+        "meaning": "ave",
+        "origin": "griego",
+        "original": "ὄρνις"
+      },
+      {
+        "text": "mancia",
+        "meaning": "adivinación",
+        "origin": "griego",
+        "original": "μαντεία"
+      }
+    ]
+  },
+  {
+    "word": "ornitólogo",
+    "definition": "Especialista en las aves.",
+    "parts": [
+      {
+        "text": "ornitó",
+        "meaning": "ave",
+        "origin": "griego",
+        "original": "ὄρνις"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "ortología",
+    "definition": "Estudio de lo correcto.",
+    "parts": [
+      {
+        "text": "orto",
+        "meaning": "recto, correcto",
+        "origin": "griego",
+        "original": "ὀρθός"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "ortografía",
+    "definition": "Representación o descripción de lo correcto.",
+    "parts": [
+      {
+        "text": "orto",
+        "meaning": "recto, correcto",
+        "origin": "griego",
+        "original": "ὀρθός"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "ortofonía",
+    "definition": "Sonido relacionado con lo correcto.",
+    "parts": [
+      {
+        "text": "orto",
+        "meaning": "recto, correcto",
+        "origin": "griego",
+        "original": "ὀρθός"
+      },
+      {
+        "text": "fonía",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "ortógrafo",
+    "definition": "Persona o instrumento que representa lo correcto.",
+    "parts": [
+      {
+        "text": "ortó",
+        "meaning": "recto, correcto",
+        "origin": "griego",
+        "original": "ὀρθός"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "ortólogo",
+    "definition": "Especialista en lo correcto.",
+    "parts": [
+      {
+        "text": "ortó",
+        "meaning": "recto, correcto",
+        "origin": "griego",
+        "original": "ὀρθός"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "osteología",
+    "definition": "Estudio de los huesos.",
+    "parts": [
+      {
+        "text": "osteo",
+        "meaning": "hueso",
+        "origin": "griego",
+        "original": "ὀστέον"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "osteopatía",
+    "definition": "Afección relacionada con los huesos.",
+    "parts": [
+      {
+        "text": "osteo",
+        "meaning": "hueso",
+        "origin": "griego",
+        "original": "ὀστέον"
+      },
+      {
+        "text": "patía",
+        "meaning": "afección, padecimiento",
+        "origin": "griego",
+        "original": "πάθεια"
+      }
+    ]
+  },
+  {
+    "word": "osteogénesis",
+    "definition": "Formación de los huesos.",
+    "parts": [
+      {
+        "text": "osteo",
+        "meaning": "hueso",
+        "origin": "griego",
+        "original": "ὀστέον"
+      },
+      {
+        "text": "génesis",
+        "meaning": "origen, formación",
+        "origin": "griego",
+        "original": "γένεσις"
+      }
+    ]
+  },
+  {
+    "word": "osteólogo",
+    "definition": "Especialista en los huesos.",
+    "parts": [
+      {
+        "text": "osteó",
+        "meaning": "hueso",
+        "origin": "griego",
+        "original": "ὀστέον"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "paleografía",
+    "definition": "Representación o descripción de lo antiguo.",
+    "parts": [
+      {
+        "text": "paleo",
+        "meaning": "antiguo",
+        "origin": "griego",
+        "original": "παλαιός"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "paleógrafo",
+    "definition": "Persona o instrumento que representa lo antiguo.",
+    "parts": [
+      {
+        "text": "paleó",
+        "meaning": "antiguo",
+        "origin": "griego",
+        "original": "παλαιός"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "paleólogo",
+    "definition": "Especialista en lo antiguo.",
+    "parts": [
+      {
+        "text": "paleó",
+        "meaning": "antiguo",
+        "origin": "griego",
+        "original": "παλαιός"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "paleógeno",
+    "definition": "Que produce o genera lo antiguo.",
+    "parts": [
+      {
+        "text": "paleó",
+        "meaning": "antiguo",
+        "origin": "griego",
+        "original": "παλαιός"
+      },
+      {
+        "text": "geno",
+        "meaning": "que produce",
+        "origin": "griego",
+        "original": "-γενής"
+      }
+    ]
+  },
+  {
+    "word": "patología",
+    "definition": "Estudio de la enfermedad.",
+    "parts": [
+      {
+        "text": "pato",
+        "meaning": "dolor, enfermedad",
+        "origin": "griego",
+        "original": "πάθος"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "patografía",
+    "definition": "Representación o descripción de la enfermedad.",
+    "parts": [
+      {
+        "text": "pato",
+        "meaning": "dolor, enfermedad",
+        "origin": "griego",
+        "original": "πάθος"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "patogenia",
+    "definition": "Producción relacionada con la enfermedad.",
+    "parts": [
+      {
+        "text": "pato",
+        "meaning": "dolor, enfermedad",
+        "origin": "griego",
+        "original": "πάθος"
+      },
+      {
+        "text": "genia",
+        "meaning": "origen, producción",
+        "origin": "griego",
+        "original": "γένεσις"
+      }
+    ]
+  },
+  {
+    "word": "patogénesis",
+    "definition": "Formación de la enfermedad.",
+    "parts": [
+      {
+        "text": "pato",
+        "meaning": "dolor, enfermedad",
+        "origin": "griego",
+        "original": "πάθος"
+      },
+      {
+        "text": "génesis",
+        "meaning": "origen, formación",
+        "origin": "griego",
+        "original": "γένεσις"
+      }
+    ]
+  },
+  {
+    "word": "psicometría",
+    "definition": "Medición relacionada con la mente.",
+    "parts": [
+      {
+        "text": "psico",
+        "meaning": "mente, alma",
+        "origin": "griego",
+        "original": "ψυχή"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "psicoterapia",
+    "definition": "Tratamiento relacionado con la mente.",
+    "parts": [
+      {
+        "text": "psico",
+        "meaning": "mente, alma",
+        "origin": "griego",
+        "original": "ψυχή"
+      },
+      {
+        "text": "terapia",
+        "meaning": "tratamiento",
+        "origin": "griego",
+        "original": "θεραπεία"
+      }
+    ]
+  },
+  {
+    "word": "psicopatía",
+    "definition": "Afección relacionada con la mente.",
+    "parts": [
+      {
+        "text": "psico",
+        "meaning": "mente, alma",
+        "origin": "griego",
+        "original": "ψυχή"
+      },
+      {
+        "text": "patía",
+        "meaning": "afección, padecimiento",
+        "origin": "griego",
+        "original": "πάθεια"
+      }
+    ]
+  },
+  {
+    "word": "psicotecnia",
+    "definition": "Técnica relacionada con la mente.",
+    "parts": [
+      {
+        "text": "psico",
+        "meaning": "mente, alma",
+        "origin": "griego",
+        "original": "ψυχή"
+      },
+      {
+        "text": "tecnia",
+        "meaning": "técnica, arte",
+        "origin": "griego",
+        "original": "τέχνη"
+      }
+    ]
+  },
+  {
+    "word": "psicofonía",
+    "definition": "Sonido relacionado con la mente.",
+    "parts": [
+      {
+        "text": "psico",
+        "meaning": "mente, alma",
+        "origin": "griego",
+        "original": "ψυχή"
+      },
+      {
+        "text": "fonía",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "psicólogo",
+    "definition": "Especialista en la mente.",
+    "parts": [
+      {
+        "text": "psicó",
+        "meaning": "mente, alma",
+        "origin": "griego",
+        "original": "ψυχή"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "psicógeno",
+    "definition": "Que produce o genera la mente.",
+    "parts": [
+      {
+        "text": "psicó",
+        "meaning": "mente, alma",
+        "origin": "griego",
+        "original": "ψυχή"
+      },
+      {
+        "text": "geno",
+        "meaning": "que produce",
+        "origin": "griego",
+        "original": "-γενής"
+      }
+    ]
+  },
+  {
+    "word": "sociología",
+    "definition": "Estudio de la sociedad.",
+    "parts": [
+      {
+        "text": "socio",
+        "meaning": "compañero",
+        "origin": "latín",
+        "original": "socius"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "sociometría",
+    "definition": "Medición relacionada con la sociedad.",
+    "parts": [
+      {
+        "text": "socio",
+        "meaning": "compañero",
+        "origin": "latín",
+        "original": "socius"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "sociopatía",
+    "definition": "Afección relacionada con la sociedad.",
+    "parts": [
+      {
+        "text": "socio",
+        "meaning": "compañero",
+        "origin": "latín",
+        "original": "socius"
+      },
+      {
+        "text": "patía",
+        "meaning": "afección, padecimiento",
+        "origin": "griego",
+        "original": "πάθεια"
+      }
+    ]
+  },
+  {
+    "word": "sociólogo",
+    "definition": "Especialista en la sociedad.",
+    "parts": [
+      {
+        "text": "soció",
+        "meaning": "compañero",
+        "origin": "latín",
+        "original": "socius"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "telegrafía",
+    "definition": "Representación o descripción de la distancia.",
+    "parts": [
+      {
+        "text": "tele",
+        "meaning": "lejos, a distancia",
+        "origin": "griego",
+        "original": "τῆλε"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "telepatía",
+    "definition": "Afección relacionada con la distancia.",
+    "parts": [
+      {
+        "text": "tele",
+        "meaning": "lejos, a distancia",
+        "origin": "griego",
+        "original": "τῆλε"
+      },
+      {
+        "text": "patía",
+        "meaning": "afección, padecimiento",
+        "origin": "griego",
+        "original": "πάθεια"
+      }
+    ]
+  },
+  {
+    "word": "telefonía",
+    "definition": "Sonido relacionado con la distancia.",
+    "parts": [
+      {
+        "text": "tele",
+        "meaning": "lejos, a distancia",
+        "origin": "griego",
+        "original": "τῆλε"
+      },
+      {
+        "text": "fonía",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "telegenia",
+    "definition": "Producción relacionada con la distancia.",
+    "parts": [
+      {
+        "text": "tele",
+        "meaning": "lejos, a distancia",
+        "origin": "griego",
+        "original": "τῆλε"
+      },
+      {
+        "text": "genia",
+        "meaning": "origen, producción",
+        "origin": "griego",
+        "original": "γένεσις"
+      }
+    ]
+  },
+  {
+    "word": "telégrafo",
+    "definition": "Persona o instrumento que representa la distancia.",
+    "parts": [
+      {
+        "text": "telé",
+        "meaning": "lejos, a distancia",
+        "origin": "griego",
+        "original": "τῆλε"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "telémetro",
+    "definition": "Medida de la distancia.",
+    "parts": [
+      {
+        "text": "telé",
+        "meaning": "lejos, a distancia",
+        "origin": "griego",
+        "original": "τῆλε"
+      },
+      {
+        "text": "metro",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μέτρον"
+      }
+    ]
+  },
+  {
+    "word": "termología",
+    "definition": "Estudio de el calor.",
+    "parts": [
+      {
+        "text": "termo",
+        "meaning": "calor",
+        "origin": "griego",
+        "original": "θέρμη"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "termografía",
+    "definition": "Representación o descripción de el calor.",
+    "parts": [
+      {
+        "text": "termo",
+        "meaning": "calor",
+        "origin": "griego",
+        "original": "θέρμη"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "termometría",
+    "definition": "Medición relacionada con el calor.",
+    "parts": [
+      {
+        "text": "termo",
+        "meaning": "calor",
+        "origin": "griego",
+        "original": "θέρμη"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "termoterapia",
+    "definition": "Tratamiento relacionado con el calor.",
+    "parts": [
+      {
+        "text": "termo",
+        "meaning": "calor",
+        "origin": "griego",
+        "original": "θέρμη"
+      },
+      {
+        "text": "terapia",
+        "meaning": "tratamiento",
+        "origin": "griego",
+        "original": "θεραπεία"
+      }
+    ]
+  },
+  {
+    "word": "termoscopio",
+    "definition": "Instrumento para observar el calor.",
+    "parts": [
+      {
+        "text": "termo",
+        "meaning": "calor",
+        "origin": "griego",
+        "original": "θέρμη"
+      },
+      {
+        "text": "scopio",
+        "meaning": "instrumento para observar",
+        "origin": "griego",
+        "original": "σκοπεῖν"
+      }
+    ]
+  },
+  {
+    "word": "termotecnia",
+    "definition": "Técnica relacionada con el calor.",
+    "parts": [
+      {
+        "text": "termo",
+        "meaning": "calor",
+        "origin": "griego",
+        "original": "θέρμη"
+      },
+      {
+        "text": "tecnia",
+        "meaning": "técnica, arte",
+        "origin": "griego",
+        "original": "τέχνη"
+      }
+    ]
+  },
+  {
+    "word": "termógrafo",
+    "definition": "Persona o instrumento que representa el calor.",
+    "parts": [
+      {
+        "text": "termó",
+        "meaning": "calor",
+        "origin": "griego",
+        "original": "θέρμη"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "topología",
+    "definition": "Estudio de los lugares.",
+    "parts": [
+      {
+        "text": "topo",
+        "meaning": "lugar",
+        "origin": "griego",
+        "original": "τόπος"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "topógrafo",
+    "definition": "Persona o instrumento que representa los lugares.",
+    "parts": [
+      {
+        "text": "topó",
+        "meaning": "lugar",
+        "origin": "griego",
+        "original": "τόπος"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "toxicogénesis",
+    "definition": "Formación de los venenos.",
+    "parts": [
+      {
+        "text": "toxico",
+        "meaning": "veneno",
+        "origin": "griego",
+        "original": "τοξικόν"
+      },
+      {
+        "text": "génesis",
+        "meaning": "origen, formación",
+        "origin": "griego",
+        "original": "γένεσις"
+      }
+    ]
+  },
+  {
+    "word": "toxicólogo",
+    "definition": "Especialista en los venenos.",
+    "parts": [
+      {
+        "text": "toxicó",
+        "meaning": "veneno",
+        "origin": "griego",
+        "original": "τοξικόν"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "zoografía",
+    "definition": "Representación o descripción de los animales.",
+    "parts": [
+      {
+        "text": "zoo",
+        "meaning": "animal",
+        "origin": "griego",
+        "original": "ζῷον"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "zoofobia",
+    "definition": "Miedo o aversión relacionado con los animales.",
+    "parts": [
+      {
+        "text": "zoo",
+        "meaning": "animal",
+        "origin": "griego",
+        "original": "ζῷον"
+      },
+      {
+        "text": "fobia",
+        "meaning": "miedo, aversión",
+        "origin": "griego",
+        "original": "φοβία"
+      }
+    ]
+  },
+  {
+    "word": "zoofilia",
+    "definition": "Afinidad o interés por los animales.",
+    "parts": [
+      {
+        "text": "zoo",
+        "meaning": "animal",
+        "origin": "griego",
+        "original": "ζῷον"
+      },
+      {
+        "text": "filia",
+        "meaning": "afinidad, amor",
+        "origin": "griego",
+        "original": "φιλία"
+      }
+    ]
+  },
+  {
+    "word": "zootecnia",
+    "definition": "Técnica relacionada con los animales.",
+    "parts": [
+      {
+        "text": "zoo",
+        "meaning": "animal",
+        "origin": "griego",
+        "original": "ζῷον"
+      },
+      {
+        "text": "tecnia",
+        "meaning": "técnica, arte",
+        "origin": "griego",
+        "original": "τέχνη"
+      }
+    ]
+  },
+  {
+    "word": "zoólogo",
+    "definition": "Especialista en los animales.",
+    "parts": [
+      {
+        "text": "zoó",
+        "meaning": "animal",
+        "origin": "griego",
+        "original": "ζῷον"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "zoófilo",
+    "definition": "Con afinidad por los animales.",
+    "parts": [
+      {
+        "text": "zoó",
+        "meaning": "animal",
+        "origin": "griego",
+        "original": "ζῷον"
+      },
+      {
+        "text": "filo",
+        "meaning": "afinidad",
+        "origin": "griego",
+        "original": "φίλος"
+      }
+    ]
+  },
+  {
+    "word": "zoófago",
+    "definition": "Que se alimenta de los animales.",
+    "parts": [
+      {
+        "text": "zoó",
+        "meaning": "animal",
+        "origin": "griego",
+        "original": "ζῷον"
+      },
+      {
+        "text": "fago",
+        "meaning": "que come",
+        "origin": "griego",
+        "original": "φαγεῖν"
+      }
+    ]
+  },
+  {
+    "word": "acrofobia",
+    "definition": "Miedo o aversión relacionado con lo más alto.",
+    "parts": [
+      {
+        "text": "acro",
+        "meaning": "extremo, altura",
+        "origin": "griego",
+        "original": "ἄκρον"
+      },
+      {
+        "text": "fobia",
+        "meaning": "miedo, aversión",
+        "origin": "griego",
+        "original": "φοβία"
+      }
+    ]
+  },
+  {
+    "word": "anemografía",
+    "definition": "Representación o descripción de el viento.",
+    "parts": [
+      {
+        "text": "anemo",
+        "meaning": "viento",
+        "origin": "griego",
+        "original": "ἄνεμος"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "anemometría",
+    "definition": "Medición relacionada con el viento.",
+    "parts": [
+      {
+        "text": "anemo",
+        "meaning": "viento",
+        "origin": "griego",
+        "original": "ἄνεμος"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "anemoscopio",
+    "definition": "Instrumento para observar el viento.",
+    "parts": [
+      {
+        "text": "anemo",
+        "meaning": "viento",
+        "origin": "griego",
+        "original": "ἄνεμος"
+      },
+      {
+        "text": "scopio",
+        "meaning": "instrumento para observar",
+        "origin": "griego",
+        "original": "σκοπεῖν"
+      }
+    ]
+  },
+  {
+    "word": "anemógrafo",
+    "definition": "Persona o instrumento que representa el viento.",
+    "parts": [
+      {
+        "text": "anemó",
+        "meaning": "viento",
+        "origin": "griego",
+        "original": "ἄνεμος"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "anemómetro",
+    "definition": "Medida de el viento.",
+    "parts": [
+      {
+        "text": "anemó",
+        "meaning": "viento",
+        "origin": "griego",
+        "original": "ἄνεμος"
+      },
+      {
+        "text": "metro",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μέτρον"
+      }
+    ]
+  },
+  {
+    "word": "anemófilo",
+    "definition": "Con afinidad por el viento.",
+    "parts": [
+      {
+        "text": "anemó",
+        "meaning": "viento",
+        "origin": "griego",
+        "original": "ἄνεμος"
+      },
+      {
+        "text": "filo",
+        "meaning": "afinidad",
+        "origin": "griego",
+        "original": "φίλος"
+      }
+    ]
+  },
+  {
+    "word": "angiología",
+    "definition": "Estudio de los vasos.",
+    "parts": [
+      {
+        "text": "angio",
+        "meaning": "vaso, conducto",
+        "origin": "griego",
+        "original": "ἀγγεῖον"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "angiografía",
+    "definition": "Representación o descripción de los vasos.",
+    "parts": [
+      {
+        "text": "angio",
+        "meaning": "vaso, conducto",
+        "origin": "griego",
+        "original": "ἀγγεῖον"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "angiogénesis",
+    "definition": "Formación de los vasos.",
+    "parts": [
+      {
+        "text": "angio",
+        "meaning": "vaso, conducto",
+        "origin": "griego",
+        "original": "ἀγγεῖον"
+      },
+      {
+        "text": "génesis",
+        "meaning": "origen, formación",
+        "origin": "griego",
+        "original": "γένεσις"
+      }
+    ]
+  },
+  {
+    "word": "angiólogo",
+    "definition": "Especialista en los vasos.",
+    "parts": [
+      {
+        "text": "angió",
+        "meaning": "vaso, conducto",
+        "origin": "griego",
+        "original": "ἀγγεῖον"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "arqueólogo",
+    "definition": "Especialista en lo antiguo.",
+    "parts": [
+      {
+        "text": "arqueó",
+        "meaning": "antiguo",
+        "origin": "griego",
+        "original": "ἀρχαῖος"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "artrología",
+    "definition": "Estudio de las articulaciones.",
+    "parts": [
+      {
+        "text": "artro",
+        "meaning": "articulación",
+        "origin": "griego",
+        "original": "ἄρθρον"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "artrografía",
+    "definition": "Representación o descripción de las articulaciones.",
+    "parts": [
+      {
+        "text": "artro",
+        "meaning": "articulación",
+        "origin": "griego",
+        "original": "ἄρθρον"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "artropatía",
+    "definition": "Afección relacionada con las articulaciones.",
+    "parts": [
+      {
+        "text": "artro",
+        "meaning": "articulación",
+        "origin": "griego",
+        "original": "ἄρθρον"
+      },
+      {
+        "text": "patía",
+        "meaning": "afección, padecimiento",
+        "origin": "griego",
+        "original": "πάθεια"
+      }
+    ]
+  },
+  {
+    "word": "artroscopia",
+    "definition": "Examen u observación de las articulaciones.",
+    "parts": [
+      {
+        "text": "artro",
+        "meaning": "articulación",
+        "origin": "griego",
+        "original": "ἄρθρον"
+      },
+      {
+        "text": "scopia",
+        "meaning": "observación, examen",
+        "origin": "griego",
+        "original": "σκοπία"
+      }
+    ]
+  },
+  {
+    "word": "artroscopio",
+    "definition": "Instrumento para observar las articulaciones.",
+    "parts": [
+      {
+        "text": "artro",
+        "meaning": "articulación",
+        "origin": "griego",
+        "original": "ἄρθρον"
+      },
+      {
+        "text": "scopio",
+        "meaning": "instrumento para observar",
+        "origin": "griego",
+        "original": "σκοπεῖν"
+      }
+    ]
+  },
+  {
+    "word": "bacteriología",
+    "definition": "Estudio de las bacterias.",
+    "parts": [
+      {
+        "text": "bacterio",
+        "meaning": "bastoncillo",
+        "origin": "griego",
+        "original": "βακτηρία"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "bacteriólogo",
+    "definition": "Especialista en las bacterias.",
+    "parts": [
+      {
+        "text": "bacterió",
+        "meaning": "bastoncillo",
+        "origin": "griego",
+        "original": "βακτηρία"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "cosmología",
+    "definition": "Estudio de el universo.",
+    "parts": [
+      {
+        "text": "cosmo",
+        "meaning": "orden, universo",
+        "origin": "griego",
+        "original": "κόσμος"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "cosmografía",
+    "definition": "Representación o descripción de el universo.",
+    "parts": [
+      {
+        "text": "cosmo",
+        "meaning": "orden, universo",
+        "origin": "griego",
+        "original": "κόσμος"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "cosmógrafo",
+    "definition": "Persona o instrumento que representa el universo.",
+    "parts": [
+      {
+        "text": "cosmó",
+        "meaning": "orden, universo",
+        "origin": "griego",
+        "original": "κόσμος"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "cosmólogo",
+    "definition": "Especialista en el universo.",
+    "parts": [
+      {
+        "text": "cosmó",
+        "meaning": "orden, universo",
+        "origin": "griego",
+        "original": "κόσμος"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "cosmódromo",
+    "definition": "Recorrido relacionado con el universo.",
+    "parts": [
+      {
+        "text": "cosmó",
+        "meaning": "orden, universo",
+        "origin": "griego",
+        "original": "κόσμος"
+      },
+      {
+        "text": "dromo",
+        "meaning": "carrera, recorrido",
+        "origin": "griego",
+        "original": "δρόμος"
+      }
+    ]
+  },
+  {
+    "word": "criptología",
+    "definition": "Estudio de lo oculto.",
+    "parts": [
+      {
+        "text": "cripto",
+        "meaning": "oculto",
+        "origin": "griego",
+        "original": "κρυπτός"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "criptografía",
+    "definition": "Representación o descripción de lo oculto.",
+    "parts": [
+      {
+        "text": "cripto",
+        "meaning": "oculto",
+        "origin": "griego",
+        "original": "κρυπτός"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "criptógrafo",
+    "definition": "Persona o instrumento que representa lo oculto.",
+    "parts": [
+      {
+        "text": "criptó",
+        "meaning": "oculto",
+        "origin": "griego",
+        "original": "κρυπτός"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "dactilología",
+    "definition": "Estudio de los dedos.",
+    "parts": [
+      {
+        "text": "dactilo",
+        "meaning": "dedo",
+        "origin": "griego",
+        "original": "δάκτυλος"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "dactilografía",
+    "definition": "Representación o descripción de los dedos.",
+    "parts": [
+      {
+        "text": "dactilo",
+        "meaning": "dedo",
+        "origin": "griego",
+        "original": "δάκτυλος"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "dactiloscopia",
+    "definition": "Examen u observación de los dedos.",
+    "parts": [
+      {
+        "text": "dactilo",
+        "meaning": "dedo",
+        "origin": "griego",
+        "original": "δάκτυλος"
+      },
+      {
+        "text": "scopia",
+        "meaning": "observación, examen",
+        "origin": "griego",
+        "original": "σκοπία"
+      }
+    ]
+  },
+  {
+    "word": "dactilógrafo",
+    "definition": "Persona o instrumento que representa los dedos.",
+    "parts": [
+      {
+        "text": "dactiló",
+        "meaning": "dedo",
+        "origin": "griego",
+        "original": "δάκτυλος"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "epigrafía",
+    "definition": "Representación o descripción de lo que está encima.",
+    "parts": [
+      {
+        "text": "epi",
+        "meaning": "sobre",
+        "origin": "griego",
+        "original": "ἐπί"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "epigénesis",
+    "definition": "Formación de lo que está encima.",
+    "parts": [
+      {
+        "text": "epi",
+        "meaning": "sobre",
+        "origin": "griego",
+        "original": "ἐπί"
+      },
+      {
+        "text": "génesis",
+        "meaning": "origen, formación",
+        "origin": "griego",
+        "original": "γένεσις"
+      }
+    ]
+  },
+  {
+    "word": "epílogo",
+    "definition": "Especialista en lo que está encima.",
+    "parts": [
+      {
+        "text": "epí",
+        "meaning": "sobre",
+        "origin": "griego",
+        "original": "ἐπί"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "eritrofobia",
+    "definition": "Miedo o aversión relacionado con el color rojo.",
+    "parts": [
+      {
+        "text": "eritro",
+        "meaning": "rojo",
+        "origin": "griego",
+        "original": "ἐρυθρός"
+      },
+      {
+        "text": "fobia",
+        "meaning": "miedo, aversión",
+        "origin": "griego",
+        "original": "φοβία"
+      }
+    ]
+  },
+  {
+    "word": "espeleología",
+    "definition": "Estudio de las cuevas.",
+    "parts": [
+      {
+        "text": "espeleo",
+        "meaning": "cueva",
+        "origin": "griego",
+        "original": "σπήλαιον"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "espeleólogo",
+    "definition": "Especialista en las cuevas.",
+    "parts": [
+      {
+        "text": "espeleó",
+        "meaning": "cueva",
+        "origin": "griego",
+        "original": "σπήλαιον"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "estenografía",
+    "definition": "Representación o descripción de lo estrecho.",
+    "parts": [
+      {
+        "text": "esteno",
+        "meaning": "estrecho",
+        "origin": "griego",
+        "original": "στενός"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "estenógrafo",
+    "definition": "Persona o instrumento que representa lo estrecho.",
+    "parts": [
+      {
+        "text": "estenó",
+        "meaning": "estrecho",
+        "origin": "griego",
+        "original": "στενός"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "eurocracia",
+    "definition": "Sistema de poder relacionado con Europa.",
+    "parts": [
+      {
+        "text": "euro",
+        "meaning": "Europa",
+        "origin": "griego",
+        "original": "Εὐρώπη"
+      },
+      {
+        "text": "cracia",
+        "meaning": "poder, gobierno",
+        "origin": "griego",
+        "original": "κράτος"
+      }
+    ]
+  },
+  {
+    "word": "histología",
+    "definition": "Estudio de los tejidos.",
+    "parts": [
+      {
+        "text": "histo",
+        "meaning": "tejido",
+        "origin": "griego",
+        "original": "ἱστός"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "histólogo",
+    "definition": "Especialista en los tejidos.",
+    "parts": [
+      {
+        "text": "histó",
+        "meaning": "tejido",
+        "origin": "griego",
+        "original": "ἱστός"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "homeopatía",
+    "definition": "Afección relacionada con lo semejante.",
+    "parts": [
+      {
+        "text": "homeo",
+        "meaning": "semejante",
+        "origin": "griego",
+        "original": "ὅμοιος"
+      },
+      {
+        "text": "patía",
+        "meaning": "afección, padecimiento",
+        "origin": "griego",
+        "original": "πάθεια"
+      }
+    ]
+  },
+  {
+    "word": "isometría",
+    "definition": "Medición relacionada con lo igual.",
+    "parts": [
+      {
+        "text": "iso",
+        "meaning": "igual",
+        "origin": "griego",
+        "original": "ἴσος"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "isonomía",
+    "definition": "Conocimiento o sistema aplicado a lo igual.",
+    "parts": [
+      {
+        "text": "iso",
+        "meaning": "igual",
+        "origin": "griego",
+        "original": "ἴσος"
+      },
+      {
+        "text": "nomía",
+        "meaning": "norma, orden",
+        "origin": "griego",
+        "original": "νομία"
+      }
+    ]
+  },
+  {
+    "word": "isofonía",
+    "definition": "Sonido relacionado con lo igual.",
+    "parts": [
+      {
+        "text": "iso",
+        "meaning": "igual",
+        "origin": "griego",
+        "original": "ἴσος"
+      },
+      {
+        "text": "fonía",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "isófago",
+    "definition": "Que se alimenta de lo igual.",
+    "parts": [
+      {
+        "text": "isó",
+        "meaning": "igual",
+        "origin": "griego",
+        "original": "ἴσος"
+      },
+      {
+        "text": "fago",
+        "meaning": "que come",
+        "origin": "griego",
+        "original": "φαγεῖν"
+      }
+    ]
+  },
+  {
+    "word": "isófono",
+    "definition": "Sonido relacionado con lo igual.",
+    "parts": [
+      {
+        "text": "isó",
+        "meaning": "igual",
+        "origin": "griego",
+        "original": "ἴσος"
+      },
+      {
+        "text": "fono",
+        "meaning": "sonido",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "miología",
+    "definition": "Estudio de los músculos.",
+    "parts": [
+      {
+        "text": "mio",
+        "meaning": "músculo",
+        "origin": "griego",
+        "original": "μῦς"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "necrología",
+    "definition": "Estudio de la muerte.",
+    "parts": [
+      {
+        "text": "necro",
+        "meaning": "muerte",
+        "origin": "griego",
+        "original": "νεκρός"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "necrofilia",
+    "definition": "Afinidad o interés por la muerte.",
+    "parts": [
+      {
+        "text": "necro",
+        "meaning": "muerte",
+        "origin": "griego",
+        "original": "νεκρός"
+      },
+      {
+        "text": "filia",
+        "meaning": "afinidad, amor",
+        "origin": "griego",
+        "original": "φιλία"
+      }
+    ]
+  },
+  {
+    "word": "necroscopia",
+    "definition": "Examen u observación de la muerte.",
+    "parts": [
+      {
+        "text": "necro",
+        "meaning": "muerte",
+        "origin": "griego",
+        "original": "νεκρός"
+      },
+      {
+        "text": "scopia",
+        "meaning": "observación, examen",
+        "origin": "griego",
+        "original": "σκοπία"
+      }
+    ]
+  },
+  {
+    "word": "necromancia",
+    "definition": "Adivinación relacionada con la muerte.",
+    "parts": [
+      {
+        "text": "necro",
+        "meaning": "muerte",
+        "origin": "griego",
+        "original": "νεκρός"
+      },
+      {
+        "text": "mancia",
+        "meaning": "adivinación",
+        "origin": "griego",
+        "original": "μαντεία"
+      }
+    ]
+  },
+  {
+    "word": "necrófilo",
+    "definition": "Con afinidad por la muerte.",
+    "parts": [
+      {
+        "text": "necró",
+        "meaning": "muerte",
+        "origin": "griego",
+        "original": "νεκρός"
+      },
+      {
+        "text": "filo",
+        "meaning": "afinidad",
+        "origin": "griego",
+        "original": "φίλος"
+      }
+    ]
+  },
+  {
+    "word": "necróforo",
+    "definition": "Que porta la muerte.",
+    "parts": [
+      {
+        "text": "necró",
+        "meaning": "muerte",
+        "origin": "griego",
+        "original": "νεκρός"
+      },
+      {
+        "text": "foro",
+        "meaning": "que lleva",
+        "origin": "griego",
+        "original": "φέρειν"
+      }
+    ]
+  },
+  {
+    "word": "neología",
+    "definition": "Estudio de lo nuevo.",
+    "parts": [
+      {
+        "text": "neo",
+        "meaning": "nuevo",
+        "origin": "griego",
+        "original": "νέος"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "petrología",
+    "definition": "Estudio de las piedras.",
+    "parts": [
+      {
+        "text": "petro",
+        "meaning": "piedra",
+        "origin": "griego",
+        "original": "πέτρα"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "petrografía",
+    "definition": "Representación o descripción de las piedras.",
+    "parts": [
+      {
+        "text": "petro",
+        "meaning": "piedra",
+        "origin": "griego",
+        "original": "πέτρα"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "pirología",
+    "definition": "Estudio de el fuego.",
+    "parts": [
+      {
+        "text": "piro",
+        "meaning": "fuego",
+        "origin": "griego",
+        "original": "πῦρ"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "pirometría",
+    "definition": "Medición relacionada con el fuego.",
+    "parts": [
+      {
+        "text": "piro",
+        "meaning": "fuego",
+        "origin": "griego",
+        "original": "πῦρ"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "piromancia",
+    "definition": "Adivinación relacionada con el fuego.",
+    "parts": [
+      {
+        "text": "piro",
+        "meaning": "fuego",
+        "origin": "griego",
+        "original": "πῦρ"
+      },
+      {
+        "text": "mancia",
+        "meaning": "adivinación",
+        "origin": "griego",
+        "original": "μαντεία"
+      }
+    ]
+  },
+  {
+    "word": "pirotecnia",
+    "definition": "Técnica relacionada con el fuego.",
+    "parts": [
+      {
+        "text": "piro",
+        "meaning": "fuego",
+        "origin": "griego",
+        "original": "πῦρ"
+      },
+      {
+        "text": "tecnia",
+        "meaning": "técnica, arte",
+        "origin": "griego",
+        "original": "τέχνη"
+      }
+    ]
+  },
+  {
+    "word": "pirómetro",
+    "definition": "Medida de el fuego.",
+    "parts": [
+      {
+        "text": "piró",
+        "meaning": "fuego",
+        "origin": "griego",
+        "original": "πῦρ"
+      },
+      {
+        "text": "metro",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μέτρον"
+      }
+    ]
+  },
+  {
+    "word": "pirógeno",
+    "definition": "Que produce o genera el fuego.",
+    "parts": [
+      {
+        "text": "piró",
+        "meaning": "fuego",
+        "origin": "griego",
+        "original": "πῦρ"
+      },
+      {
+        "text": "geno",
+        "meaning": "que produce",
+        "origin": "griego",
+        "original": "-γενής"
+      }
+    ]
+  },
+  {
+    "word": "plutocracia",
+    "definition": "Sistema de poder relacionado con la riqueza.",
+    "parts": [
+      {
+        "text": "pluto",
+        "meaning": "riqueza",
+        "origin": "griego",
+        "original": "πλοῦτος"
+      },
+      {
+        "text": "cracia",
+        "meaning": "poder, gobierno",
+        "origin": "griego",
+        "original": "κράτος"
+      }
+    ]
+  },
+  {
+    "word": "poligrafía",
+    "definition": "Representación o descripción de lo numeroso.",
+    "parts": [
+      {
+        "text": "poli",
+        "meaning": "mucho, numeroso",
+        "origin": "griego",
+        "original": "πολύς"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "polimetría",
+    "definition": "Medición relacionada con lo numeroso.",
+    "parts": [
+      {
+        "text": "poli",
+        "meaning": "mucho, numeroso",
+        "origin": "griego",
+        "original": "πολύς"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "polifonía",
+    "definition": "Sonido relacionado con lo numeroso.",
+    "parts": [
+      {
+        "text": "poli",
+        "meaning": "mucho, numeroso",
+        "origin": "griego",
+        "original": "πολύς"
+      },
+      {
+        "text": "fonía",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "andrología",
+    "definition": "Estudio de los hombres.",
+    "parts": [
+      {
+        "text": "andro",
+        "meaning": "hombre",
+        "origin": "griego",
+        "original": "ἀνήρ"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "androfobia",
+    "definition": "Miedo o aversión relacionado con los hombres.",
+    "parts": [
+      {
+        "text": "andro",
+        "meaning": "hombre",
+        "origin": "griego",
+        "original": "ἀνήρ"
+      },
+      {
+        "text": "fobia",
+        "meaning": "miedo, aversión",
+        "origin": "griego",
+        "original": "φοβία"
+      }
+    ]
+  },
+  {
+    "word": "androgénesis",
+    "definition": "Formación de los hombres.",
+    "parts": [
+      {
+        "text": "andro",
+        "meaning": "hombre",
+        "origin": "griego",
+        "original": "ἀνήρ"
+      },
+      {
+        "text": "génesis",
+        "meaning": "origen, formación",
+        "origin": "griego",
+        "original": "γένεσις"
+      }
+    ]
+  },
+  {
+    "word": "andrólogo",
+    "definition": "Especialista en los hombres.",
+    "parts": [
+      {
+        "text": "andró",
+        "meaning": "hombre",
+        "origin": "griego",
+        "original": "ἀνήρ"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "andrógeno",
+    "definition": "Que produce o genera los hombres.",
+    "parts": [
+      {
+        "text": "andró",
+        "meaning": "hombre",
+        "origin": "griego",
+        "original": "ἀνήρ"
+      },
+      {
+        "text": "geno",
+        "meaning": "que produce",
+        "origin": "griego",
+        "original": "-γενής"
+      }
+    ]
+  },
+  {
+    "word": "aracnología",
+    "definition": "Estudio de las arañas.",
+    "parts": [
+      {
+        "text": "aracno",
+        "meaning": "araña",
+        "origin": "griego",
+        "original": "ἀράχνη"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "aracnólogo",
+    "definition": "Especialista en las arañas.",
+    "parts": [
+      {
+        "text": "aracnó",
+        "meaning": "araña",
+        "origin": "griego",
+        "original": "ἀράχνη"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "audiología",
+    "definition": "Estudio de la audición.",
+    "parts": [
+      {
+        "text": "audio",
+        "meaning": "oír",
+        "origin": "latín",
+        "original": "audire"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "audiometría",
+    "definition": "Medición relacionada con la audición.",
+    "parts": [
+      {
+        "text": "audio",
+        "meaning": "oír",
+        "origin": "latín",
+        "original": "audire"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "audiólogo",
+    "definition": "Especialista en la audición.",
+    "parts": [
+      {
+        "text": "audió",
+        "meaning": "oír",
+        "origin": "latín",
+        "original": "audire"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "audiómetro",
+    "definition": "Medida de la audición.",
+    "parts": [
+      {
+        "text": "audió",
+        "meaning": "oír",
+        "origin": "latín",
+        "original": "audire"
+      },
+      {
+        "text": "metro",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μέτρον"
+      }
+    ]
+  },
+  {
+    "word": "audiófono",
+    "definition": "Sonido relacionado con la audición.",
+    "parts": [
+      {
+        "text": "audió",
+        "meaning": "oír",
+        "origin": "latín",
+        "original": "audire"
+      },
+      {
+        "text": "fono",
+        "meaning": "sonido",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "broncoscopia",
+    "definition": "Examen u observación de los bronquios.",
+    "parts": [
+      {
+        "text": "bronco",
+        "meaning": "tráquea",
+        "origin": "griego",
+        "original": "βρόγχος"
+      },
+      {
+        "text": "scopia",
+        "meaning": "observación, examen",
+        "origin": "griego",
+        "original": "σκοπία"
+      }
+    ]
+  },
+  {
+    "word": "broncoscopio",
+    "definition": "Instrumento para observar los bronquios.",
+    "parts": [
+      {
+        "text": "bronco",
+        "meaning": "tráquea",
+        "origin": "griego",
+        "original": "βρόγχος"
+      },
+      {
+        "text": "scopio",
+        "meaning": "instrumento para observar",
+        "origin": "griego",
+        "original": "σκοπεῖν"
+      }
+    ]
+  },
+  {
+    "word": "caligrafía",
+    "definition": "Representación o descripción de lo bello.",
+    "parts": [
+      {
+        "text": "cali",
+        "meaning": "belleza",
+        "origin": "griego",
+        "original": "κάλλος"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "cinefilia",
+    "definition": "Afinidad o interés por el movimiento.",
+    "parts": [
+      {
+        "text": "cine",
+        "meaning": "movimiento",
+        "origin": "griego",
+        "original": "κίνησις"
+      },
+      {
+        "text": "filia",
+        "meaning": "afinidad, amor",
+        "origin": "griego",
+        "original": "φιλία"
+      }
+    ]
+  },
+  {
+    "word": "cineteca",
+    "definition": "Colección o depósito de el movimiento.",
+    "parts": [
+      {
+        "text": "cine",
+        "meaning": "movimiento",
+        "origin": "griego",
+        "original": "κίνησις"
+      },
+      {
+        "text": "teca",
+        "meaning": "depósito, colección",
+        "origin": "griego",
+        "original": "θήκη"
+      }
+    ]
+  },
+  {
+    "word": "cinéfilo",
+    "definition": "Con afinidad por el movimiento.",
+    "parts": [
+      {
+        "text": "ciné",
+        "meaning": "movimiento",
+        "origin": "griego",
+        "original": "κίνησις"
+      },
+      {
+        "text": "filo",
+        "meaning": "afinidad",
+        "origin": "griego",
+        "original": "φίλος"
+      }
+    ]
+  },
+  {
+    "word": "cistoscopia",
+    "definition": "Examen u observación de los sacos.",
+    "parts": [
+      {
+        "text": "cisto",
+        "meaning": "vejiga, saco",
+        "origin": "griego",
+        "original": "κύστις"
+      },
+      {
+        "text": "scopia",
+        "meaning": "observación, examen",
+        "origin": "griego",
+        "original": "σκοπία"
+      }
+    ]
+  },
+  {
+    "word": "cistoscopio",
+    "definition": "Instrumento para observar los sacos.",
+    "parts": [
+      {
+        "text": "cisto",
+        "meaning": "vejiga, saco",
+        "origin": "griego",
+        "original": "κύστις"
+      },
+      {
+        "text": "scopio",
+        "meaning": "instrumento para observar",
+        "origin": "griego",
+        "original": "σκοπεῖν"
+      }
+    ]
+  },
+  {
+    "word": "climatología",
+    "definition": "Estudio de el clima.",
+    "parts": [
+      {
+        "text": "climato",
+        "meaning": "inclinación, clima",
+        "origin": "griego",
+        "original": "κλίμα"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "climatólogo",
+    "definition": "Especialista en el clima.",
+    "parts": [
+      {
+        "text": "climató",
+        "meaning": "inclinación, clima",
+        "origin": "griego",
+        "original": "κλίμα"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "clorófilo",
+    "definition": "Con afinidad por el color verde.",
+    "parts": [
+      {
+        "text": "cloró",
+        "meaning": "verde",
+        "origin": "griego",
+        "original": "χλωρός"
+      },
+      {
+        "text": "filo",
+        "meaning": "afinidad",
+        "origin": "griego",
+        "original": "φίλος"
+      }
+    ]
+  },
+  {
+    "word": "crioterapia",
+    "definition": "Tratamiento relacionado con el frío.",
+    "parts": [
+      {
+        "text": "crio",
+        "meaning": "frío",
+        "origin": "griego",
+        "original": "κρύος"
+      },
+      {
+        "text": "terapia",
+        "meaning": "tratamiento",
+        "origin": "griego",
+        "original": "θεραπεία"
+      }
+    ]
+  },
+  {
+    "word": "crioscopia",
+    "definition": "Examen u observación de el frío.",
+    "parts": [
+      {
+        "text": "crio",
+        "meaning": "frío",
+        "origin": "griego",
+        "original": "κρύος"
+      },
+      {
+        "text": "scopia",
+        "meaning": "observación, examen",
+        "origin": "griego",
+        "original": "σκοπία"
+      }
+    ]
+  },
+  {
+    "word": "criogenia",
+    "definition": "Producción relacionada con el frío.",
+    "parts": [
+      {
+        "text": "crio",
+        "meaning": "frío",
+        "origin": "griego",
+        "original": "κρύος"
+      },
+      {
+        "text": "genia",
+        "meaning": "origen, producción",
+        "origin": "griego",
+        "original": "γένεσις"
+      }
+    ]
+  },
+  {
+    "word": "dermatólogo",
+    "definition": "Especialista en la piel.",
+    "parts": [
+      {
+        "text": "dermató",
+        "meaning": "piel",
+        "origin": "griego",
+        "original": "δέρμα"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "diafonía",
+    "definition": "Sonido relacionado con el paso.",
+    "parts": [
+      {
+        "text": "dia",
+        "meaning": "a través de",
+        "origin": "griego",
+        "original": "διά"
+      },
+      {
+        "text": "fonía",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "disgrafía",
+    "definition": "Representación o descripción de lo difícil.",
+    "parts": [
+      {
+        "text": "dis",
+        "meaning": "dificultad",
+        "origin": "griego",
+        "original": "δυσ-"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "disfonía",
+    "definition": "Sonido relacionado con lo difícil.",
+    "parts": [
+      {
+        "text": "dis",
+        "meaning": "dificultad",
+        "origin": "griego",
+        "original": "δυσ-"
+      },
+      {
+        "text": "fonía",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "egofonía",
+    "definition": "Sonido relacionado con el yo.",
+    "parts": [
+      {
+        "text": "ego",
+        "meaning": "yo",
+        "origin": "griego",
+        "original": "ἐγώ"
+      },
+      {
+        "text": "fonía",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "encefalografía",
+    "definition": "Representación o descripción de el cerebro.",
+    "parts": [
+      {
+        "text": "encefalo",
+        "meaning": "cerebro",
+        "origin": "griego",
+        "original": "ἐγκέφαλος"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "encefalopatía",
+    "definition": "Afección relacionada con el cerebro.",
+    "parts": [
+      {
+        "text": "encefalo",
+        "meaning": "cerebro",
+        "origin": "griego",
+        "original": "ἐγκέφαλος"
+      },
+      {
+        "text": "patía",
+        "meaning": "afección, padecimiento",
+        "origin": "griego",
+        "original": "πάθεια"
+      }
+    ]
+  },
+  {
+    "word": "ergometría",
+    "definition": "Medición relacionada con el trabajo.",
+    "parts": [
+      {
+        "text": "ergo",
+        "meaning": "trabajo",
+        "origin": "griego",
+        "original": "ἔργον"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "ergoterapia",
+    "definition": "Tratamiento relacionado con el trabajo.",
+    "parts": [
+      {
+        "text": "ergo",
+        "meaning": "trabajo",
+        "origin": "griego",
+        "original": "ἔργον"
+      },
+      {
+        "text": "terapia",
+        "meaning": "tratamiento",
+        "origin": "griego",
+        "original": "θεραπεία"
+      }
+    ]
+  },
+  {
+    "word": "ergonomía",
+    "definition": "Conocimiento o sistema aplicado a el trabajo.",
+    "parts": [
+      {
+        "text": "ergo",
+        "meaning": "trabajo",
+        "origin": "griego",
+        "original": "ἔργον"
+      },
+      {
+        "text": "nomía",
+        "meaning": "norma, orden",
+        "origin": "griego",
+        "original": "νομία"
+      }
+    ]
+  },
+  {
+    "word": "ergómetro",
+    "definition": "Medida de el trabajo.",
+    "parts": [
+      {
+        "text": "ergó",
+        "meaning": "trabajo",
+        "origin": "griego",
+        "original": "ἔργον"
+      },
+      {
+        "text": "metro",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μέτρον"
+      }
+    ]
+  },
+  {
+    "word": "estereografía",
+    "definition": "Representación o descripción de lo sólido.",
+    "parts": [
+      {
+        "text": "estereo",
+        "meaning": "sólido",
+        "origin": "griego",
+        "original": "στερεός"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "estereometría",
+    "definition": "Medición relacionada con lo sólido.",
+    "parts": [
+      {
+        "text": "estereo",
+        "meaning": "sólido",
+        "origin": "griego",
+        "original": "στερεός"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "estereoscopia",
+    "definition": "Examen u observación de lo sólido.",
+    "parts": [
+      {
+        "text": "estereo",
+        "meaning": "sólido",
+        "origin": "griego",
+        "original": "στερεός"
+      },
+      {
+        "text": "scopia",
+        "meaning": "observación, examen",
+        "origin": "griego",
+        "original": "σκοπία"
+      }
+    ]
+  },
+  {
+    "word": "estereoscopio",
+    "definition": "Instrumento para observar lo sólido.",
+    "parts": [
+      {
+        "text": "estereo",
+        "meaning": "sólido",
+        "origin": "griego",
+        "original": "στερεός"
+      },
+      {
+        "text": "scopio",
+        "meaning": "instrumento para observar",
+        "origin": "griego",
+        "original": "σκοπεῖν"
+      }
+    ]
+  },
+  {
+    "word": "estereofonía",
+    "definition": "Sonido relacionado con lo sólido.",
+    "parts": [
+      {
+        "text": "estereo",
+        "meaning": "sólido",
+        "origin": "griego",
+        "original": "στερεός"
+      },
+      {
+        "text": "fonía",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "estereógrafo",
+    "definition": "Persona o instrumento que representa lo sólido.",
+    "parts": [
+      {
+        "text": "estereó",
+        "meaning": "sólido",
+        "origin": "griego",
+        "original": "στερεός"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "estetoscopia",
+    "definition": "Examen u observación de la sensación.",
+    "parts": [
+      {
+        "text": "esteto",
+        "meaning": "sensación",
+        "origin": "griego",
+        "original": "αἴσθησις"
+      },
+      {
+        "text": "scopia",
+        "meaning": "observación, examen",
+        "origin": "griego",
+        "original": "σκοπία"
+      }
+    ]
+  },
+  {
+    "word": "estetoscopio",
+    "definition": "Instrumento para observar la sensación.",
+    "parts": [
+      {
+        "text": "esteto",
+        "meaning": "sensación",
+        "origin": "griego",
+        "original": "αἴσθησις"
+      },
+      {
+        "text": "scopio",
+        "meaning": "instrumento para observar",
+        "origin": "griego",
+        "original": "σκοπεῖν"
+      }
+    ]
+  },
+  {
+    "word": "etiología",
+    "definition": "Estudio de la causa.",
+    "parts": [
+      {
+        "text": "etio",
+        "meaning": "causa",
+        "origin": "griego",
+        "original": "αἰτία"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "farmacología",
+    "definition": "Estudio de los medicamentos.",
+    "parts": [
+      {
+        "text": "farmaco",
+        "meaning": "medicamento",
+        "origin": "griego",
+        "original": "φάρμακον"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "farmacoterapia",
+    "definition": "Tratamiento relacionado con los medicamentos.",
+    "parts": [
+      {
+        "text": "farmaco",
+        "meaning": "medicamento",
+        "origin": "griego",
+        "original": "φάρμακον"
+      },
+      {
+        "text": "terapia",
+        "meaning": "tratamiento",
+        "origin": "griego",
+        "original": "θεραπεία"
+      }
+    ]
+  },
+  {
+    "word": "farmacólogo",
+    "definition": "Especialista en los medicamentos.",
+    "parts": [
+      {
+        "text": "farmacó",
+        "meaning": "medicamento",
+        "origin": "griego",
+        "original": "φάρμακον"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "filólogo",
+    "definition": "Especialista en la afinidad.",
+    "parts": [
+      {
+        "text": "filó",
+        "meaning": "amor, afinidad",
+        "origin": "griego",
+        "original": "φίλος"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "fisiología",
+    "definition": "Estudio de la naturaleza.",
+    "parts": [
+      {
+        "text": "fisio",
+        "meaning": "naturaleza",
+        "origin": "griego",
+        "original": "φύσις"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "fisiografía",
+    "definition": "Representación o descripción de la naturaleza.",
+    "parts": [
+      {
+        "text": "fisio",
+        "meaning": "naturaleza",
+        "origin": "griego",
+        "original": "φύσις"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "fisioterapia",
+    "definition": "Tratamiento relacionado con la naturaleza.",
+    "parts": [
+      {
+        "text": "fisio",
+        "meaning": "naturaleza",
+        "origin": "griego",
+        "original": "φύσις"
+      },
+      {
+        "text": "terapia",
+        "meaning": "tratamiento",
+        "origin": "griego",
+        "original": "θεραπεία"
+      }
+    ]
+  },
+  {
+    "word": "fisionomía",
+    "definition": "Conocimiento o sistema aplicado a la naturaleza.",
+    "parts": [
+      {
+        "text": "fisio",
+        "meaning": "naturaleza",
+        "origin": "griego",
+        "original": "φύσις"
+      },
+      {
+        "text": "nomía",
+        "meaning": "norma, orden",
+        "origin": "griego",
+        "original": "νομία"
+      }
+    ]
+  },
+  {
+    "word": "fisiocracia",
+    "definition": "Sistema de poder relacionado con la naturaleza.",
+    "parts": [
+      {
+        "text": "fisio",
+        "meaning": "naturaleza",
+        "origin": "griego",
+        "original": "φύσις"
+      },
+      {
+        "text": "cracia",
+        "meaning": "poder, gobierno",
+        "origin": "griego",
+        "original": "κράτος"
+      }
+    ]
+  },
+  {
+    "word": "fisiólogo",
+    "definition": "Especialista en la naturaleza.",
+    "parts": [
+      {
+        "text": "fisió",
+        "meaning": "naturaleza",
+        "origin": "griego",
+        "original": "φύσις"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "frenología",
+    "definition": "Estudio de la mente.",
+    "parts": [
+      {
+        "text": "freno",
+        "meaning": "mente",
+        "origin": "griego",
+        "original": "φρήν"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "frenopatía",
+    "definition": "Afección relacionada con la mente.",
+    "parts": [
+      {
+        "text": "freno",
+        "meaning": "mente",
+        "origin": "griego",
+        "original": "φρήν"
+      },
+      {
+        "text": "patía",
+        "meaning": "afección, padecimiento",
+        "origin": "griego",
+        "original": "πάθεια"
+      }
+    ]
+  },
+  {
+    "word": "frenólogo",
+    "definition": "Especialista en la mente.",
+    "parts": [
+      {
+        "text": "frenó",
+        "meaning": "mente",
+        "origin": "griego",
+        "original": "φρήν"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "galactómetro",
+    "definition": "Medida de la leche.",
+    "parts": [
+      {
+        "text": "galactó",
+        "meaning": "leche",
+        "origin": "griego",
+        "original": "γάλα"
+      },
+      {
+        "text": "metro",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μέτρον"
+      }
+    ]
+  },
+  {
+    "word": "galactógeno",
+    "definition": "Que produce o genera la leche.",
+    "parts": [
+      {
+        "text": "galactó",
+        "meaning": "leche",
+        "origin": "griego",
+        "original": "γάλα"
+      },
+      {
+        "text": "geno",
+        "meaning": "que produce",
+        "origin": "griego",
+        "original": "-γενής"
+      }
+    ]
+  },
+  {
+    "word": "galactóforo",
+    "definition": "Que porta la leche.",
+    "parts": [
+      {
+        "text": "galactó",
+        "meaning": "leche",
+        "origin": "griego",
+        "original": "γάλα"
+      },
+      {
+        "text": "foro",
+        "meaning": "que lleva",
+        "origin": "griego",
+        "original": "φέρειν"
+      }
+    ]
+  },
+  {
+    "word": "glucómetro",
+    "definition": "Medida de lo dulce.",
+    "parts": [
+      {
+        "text": "glucó",
+        "meaning": "dulce",
+        "origin": "griego",
+        "original": "γλυκύς"
+      },
+      {
+        "text": "metro",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μέτρον"
+      }
+    ]
+  },
+  {
+    "word": "glucógeno",
+    "definition": "Que produce o genera lo dulce.",
+    "parts": [
+      {
+        "text": "glucó",
+        "meaning": "dulce",
+        "origin": "griego",
+        "original": "γλυκύς"
+      },
+      {
+        "text": "geno",
+        "meaning": "que produce",
+        "origin": "griego",
+        "original": "-γενής"
+      }
+    ]
+  },
+  {
+    "word": "higrometría",
+    "definition": "Medición relacionada con la humedad.",
+    "parts": [
+      {
+        "text": "higro",
+        "meaning": "humedad",
+        "origin": "griego",
+        "original": "ὑγρός"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "higroscopia",
+    "definition": "Examen u observación de la humedad.",
+    "parts": [
+      {
+        "text": "higro",
+        "meaning": "humedad",
+        "origin": "griego",
+        "original": "ὑγρός"
+      },
+      {
+        "text": "scopia",
+        "meaning": "observación, examen",
+        "origin": "griego",
+        "original": "σκοπία"
+      }
+    ]
+  },
+  {
+    "word": "higroscopio",
+    "definition": "Instrumento para observar la humedad.",
+    "parts": [
+      {
+        "text": "higro",
+        "meaning": "humedad",
+        "origin": "griego",
+        "original": "ὑγρός"
+      },
+      {
+        "text": "scopio",
+        "meaning": "instrumento para observar",
+        "origin": "griego",
+        "original": "σκοπεῖν"
+      }
+    ]
+  },
+  {
+    "word": "higrómetro",
+    "definition": "Medida de la humedad.",
+    "parts": [
+      {
+        "text": "higró",
+        "meaning": "humedad",
+        "origin": "griego",
+        "original": "ὑγρός"
+      },
+      {
+        "text": "metro",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μέτρον"
+      }
+    ]
+  },
+  {
+    "word": "higrófilo",
+    "definition": "Con afinidad por la humedad.",
+    "parts": [
+      {
+        "text": "higró",
+        "meaning": "humedad",
+        "origin": "griego",
+        "original": "ὑγρός"
+      },
+      {
+        "text": "filo",
+        "meaning": "afinidad",
+        "origin": "griego",
+        "original": "φίλος"
+      }
+    ]
+  },
+  {
+    "word": "holografía",
+    "definition": "Representación o descripción de el conjunto.",
+    "parts": [
+      {
+        "text": "holo",
+        "meaning": "todo, entero",
+        "origin": "griego",
+        "original": "ὅλος"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "hológrafo",
+    "definition": "Persona o instrumento que representa el conjunto.",
+    "parts": [
+      {
+        "text": "holó",
+        "meaning": "todo, entero",
+        "origin": "griego",
+        "original": "ὅλος"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "holómetro",
+    "definition": "Medida de el conjunto.",
+    "parts": [
+      {
+        "text": "holó",
+        "meaning": "todo, entero",
+        "origin": "griego",
+        "original": "ὅλος"
+      },
+      {
+        "text": "metro",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μέτρον"
+      }
+    ]
+  },
+  {
+    "word": "homología",
+    "definition": "Estudio de lo igual.",
+    "parts": [
+      {
+        "text": "homo",
+        "meaning": "igual",
+        "origin": "griego",
+        "original": "ὁμός"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "homografía",
+    "definition": "Representación o descripción de lo igual.",
+    "parts": [
+      {
+        "text": "homo",
+        "meaning": "igual",
+        "origin": "griego",
+        "original": "ὁμός"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "homofonía",
+    "definition": "Sonido relacionado con lo igual.",
+    "parts": [
+      {
+        "text": "homo",
+        "meaning": "igual",
+        "origin": "griego",
+        "original": "ὁμός"
+      },
+      {
+        "text": "fonía",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "homógrafo",
+    "definition": "Persona o instrumento que representa lo igual.",
+    "parts": [
+      {
+        "text": "homó",
+        "meaning": "igual",
+        "origin": "griego",
+        "original": "ὁμός"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "homólogo",
+    "definition": "Especialista en lo igual.",
+    "parts": [
+      {
+        "text": "homó",
+        "meaning": "igual",
+        "origin": "griego",
+        "original": "ὁμός"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "homófono",
+    "definition": "Sonido relacionado con lo igual.",
+    "parts": [
+      {
+        "text": "homó",
+        "meaning": "igual",
+        "origin": "griego",
+        "original": "ὁμός"
+      },
+      {
+        "text": "fono",
+        "meaning": "sonido",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "mastología",
+    "definition": "Estudio de las mamas.",
+    "parts": [
+      {
+        "text": "masto",
+        "meaning": "mama",
+        "origin": "griego",
+        "original": "μαστός"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "mastopatía",
+    "definition": "Afección relacionada con las mamas.",
+    "parts": [
+      {
+        "text": "masto",
+        "meaning": "mama",
+        "origin": "griego",
+        "original": "μαστός"
+      },
+      {
+        "text": "patía",
+        "meaning": "afección, padecimiento",
+        "origin": "griego",
+        "original": "πάθεια"
+      }
+    ]
+  },
+  {
+    "word": "mastólogo",
+    "definition": "Especialista en las mamas.",
+    "parts": [
+      {
+        "text": "mastó",
+        "meaning": "mama",
+        "origin": "griego",
+        "original": "μαστός"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "megafonía",
+    "definition": "Sonido relacionado con lo grande.",
+    "parts": [
+      {
+        "text": "mega",
+        "meaning": "grande",
+        "origin": "griego",
+        "original": "μέγας"
+      },
+      {
+        "text": "fonía",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "megáfono",
+    "definition": "Sonido relacionado con lo grande.",
+    "parts": [
+      {
+        "text": "megá",
+        "meaning": "grande",
+        "origin": "griego",
+        "original": "μέγας"
+      },
+      {
+        "text": "fono",
+        "meaning": "sonido",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "melanóforo",
+    "definition": "Que porta el color negro.",
+    "parts": [
+      {
+        "text": "melanó",
+        "meaning": "negro",
+        "origin": "griego",
+        "original": "μέλας"
+      },
+      {
+        "text": "foro",
+        "meaning": "que lleva",
+        "origin": "griego",
+        "original": "φέρειν"
+      }
+    ]
+  },
+  {
+    "word": "mesoterapia",
+    "definition": "Tratamiento relacionado con lo intermedio.",
+    "parts": [
+      {
+        "text": "meso",
+        "meaning": "medio",
+        "origin": "griego",
+        "original": "μέσος"
+      },
+      {
+        "text": "terapia",
+        "meaning": "tratamiento",
+        "origin": "griego",
+        "original": "θεραπεία"
+      }
+    ]
+  },
+  {
+    "word": "mesocracia",
+    "definition": "Sistema de poder relacionado con lo intermedio.",
+    "parts": [
+      {
+        "text": "meso",
+        "meaning": "medio",
+        "origin": "griego",
+        "original": "μέσος"
+      },
+      {
+        "text": "cracia",
+        "meaning": "poder, gobierno",
+        "origin": "griego",
+        "original": "κράτος"
+      }
+    ]
+  },
+  {
+    "word": "metafonía",
+    "definition": "Sonido relacionado con el cambio.",
+    "parts": [
+      {
+        "text": "meta",
+        "meaning": "cambio, más allá",
+        "origin": "griego",
+        "original": "μετά"
+      },
+      {
+        "text": "fonía",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "monografía",
+    "definition": "Representación o descripción de lo único.",
+    "parts": [
+      {
+        "text": "mono",
+        "meaning": "uno, único",
+        "origin": "griego",
+        "original": "μόνος"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "monófilo",
+    "definition": "Con afinidad por lo único.",
+    "parts": [
+      {
+        "text": "monó",
+        "meaning": "uno, único",
+        "origin": "griego",
+        "original": "μόνος"
+      },
+      {
+        "text": "filo",
+        "meaning": "afinidad",
+        "origin": "griego",
+        "original": "φίλος"
+      }
+    ]
+  },
+  {
+    "word": "oftalmología",
+    "definition": "Estudio de los ojos.",
+    "parts": [
+      {
+        "text": "oftalmo",
+        "meaning": "ojo",
+        "origin": "griego",
+        "original": "ὀφθαλμός"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "oftalmoscopia",
+    "definition": "Examen u observación de los ojos.",
+    "parts": [
+      {
+        "text": "oftalmo",
+        "meaning": "ojo",
+        "origin": "griego",
+        "original": "ὀφθαλμός"
+      },
+      {
+        "text": "scopia",
+        "meaning": "observación, examen",
+        "origin": "griego",
+        "original": "σκοπία"
+      }
+    ]
+  },
+  {
+    "word": "oftalmoscopio",
+    "definition": "Instrumento para observar los ojos.",
+    "parts": [
+      {
+        "text": "oftalmo",
+        "meaning": "ojo",
+        "origin": "griego",
+        "original": "ὀφθαλμός"
+      },
+      {
+        "text": "scopio",
+        "meaning": "instrumento para observar",
+        "origin": "griego",
+        "original": "σκοπεῖν"
+      }
+    ]
+  },
+  {
+    "word": "oftalmólogo",
+    "definition": "Especialista en los ojos.",
+    "parts": [
+      {
+        "text": "oftalmó",
+        "meaning": "ojo",
+        "origin": "griego",
+        "original": "ὀφθαλμός"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "ontología",
+    "definition": "Estudio de el ser.",
+    "parts": [
+      {
+        "text": "onto",
+        "meaning": "ser",
+        "origin": "griego",
+        "original": "ὄν"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "ontogenia",
+    "definition": "Producción relacionada con el ser.",
+    "parts": [
+      {
+        "text": "onto",
+        "meaning": "ser",
+        "origin": "griego",
+        "original": "ὄν"
+      },
+      {
+        "text": "genia",
+        "meaning": "origen, producción",
+        "origin": "griego",
+        "original": "γένεσις"
+      }
+    ]
+  },
+  {
+    "word": "ontólogo",
+    "definition": "Especialista en el ser.",
+    "parts": [
+      {
+        "text": "ontó",
+        "meaning": "ser",
+        "origin": "griego",
+        "original": "ὄν"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "otología",
+    "definition": "Estudio de el oído.",
+    "parts": [
+      {
+        "text": "oto",
+        "meaning": "oído",
+        "origin": "griego",
+        "original": "οὖς"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "otoscopia",
+    "definition": "Examen u observación de el oído.",
+    "parts": [
+      {
+        "text": "oto",
+        "meaning": "oído",
+        "origin": "griego",
+        "original": "οὖς"
+      },
+      {
+        "text": "scopia",
+        "meaning": "observación, examen",
+        "origin": "griego",
+        "original": "σκοπία"
+      }
+    ]
+  },
+  {
+    "word": "otoscopio",
+    "definition": "Instrumento para observar el oído.",
+    "parts": [
+      {
+        "text": "oto",
+        "meaning": "oído",
+        "origin": "griego",
+        "original": "οὖς"
+      },
+      {
+        "text": "scopio",
+        "meaning": "instrumento para observar",
+        "origin": "griego",
+        "original": "σκοπεῖν"
+      }
+    ]
+  },
+  {
+    "word": "otólogo",
+    "definition": "Especialista en el oído.",
+    "parts": [
+      {
+        "text": "otó",
+        "meaning": "oído",
+        "origin": "griego",
+        "original": "οὖς"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "piezometría",
+    "definition": "Medición relacionada con la presión.",
+    "parts": [
+      {
+        "text": "piezo",
+        "meaning": "presión",
+        "origin": "griego",
+        "original": "πιέζειν"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "piezómetro",
+    "definition": "Medida de la presión.",
+    "parts": [
+      {
+        "text": "piezó",
+        "meaning": "presión",
+        "origin": "griego",
+        "original": "πιέζειν"
+      },
+      {
+        "text": "metro",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μέτρον"
+      }
+    ]
+  },
+  {
+    "word": "podología",
+    "definition": "Estudio de los pies.",
+    "parts": [
+      {
+        "text": "podo",
+        "meaning": "pie",
+        "origin": "griego",
+        "original": "πούς"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "podólogo",
+    "definition": "Especialista en los pies.",
+    "parts": [
+      {
+        "text": "podó",
+        "meaning": "pie",
+        "origin": "griego",
+        "original": "πούς"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "podómetro",
+    "definition": "Medida de los pies.",
+    "parts": [
+      {
+        "text": "podó",
+        "meaning": "pie",
+        "origin": "griego",
+        "original": "πούς"
+      },
+      {
+        "text": "metro",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μέτρον"
+      }
+    ]
+  },
+  {
+    "word": "pseudología",
+    "definition": "Estudio de lo falso.",
+    "parts": [
+      {
+        "text": "pseudo",
+        "meaning": "falso",
+        "origin": "griego",
+        "original": "ψευδής"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "radiología",
+    "definition": "Estudio de los rayos.",
+    "parts": [
+      {
+        "text": "radio",
+        "meaning": "rayo",
+        "origin": "latín",
+        "original": "radius"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "radiografía",
+    "definition": "Representación o descripción de los rayos.",
+    "parts": [
+      {
+        "text": "radio",
+        "meaning": "rayo",
+        "origin": "latín",
+        "original": "radius"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "radiometría",
+    "definition": "Medición relacionada con los rayos.",
+    "parts": [
+      {
+        "text": "radio",
+        "meaning": "rayo",
+        "origin": "latín",
+        "original": "radius"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "radioterapia",
+    "definition": "Tratamiento relacionado con los rayos.",
+    "parts": [
+      {
+        "text": "radio",
+        "meaning": "rayo",
+        "origin": "latín",
+        "original": "radius"
+      },
+      {
+        "text": "terapia",
+        "meaning": "tratamiento",
+        "origin": "griego",
+        "original": "θεραπεία"
+      }
+    ]
+  },
+  {
+    "word": "radioscopia",
+    "definition": "Examen u observación de los rayos.",
+    "parts": [
+      {
+        "text": "radio",
+        "meaning": "rayo",
+        "origin": "latín",
+        "original": "radius"
+      },
+      {
+        "text": "scopia",
+        "meaning": "observación, examen",
+        "origin": "griego",
+        "original": "σκοπία"
+      }
+    ]
+  },
+  {
+    "word": "radiotecnia",
+    "definition": "Técnica relacionada con los rayos.",
+    "parts": [
+      {
+        "text": "radio",
+        "meaning": "rayo",
+        "origin": "latín",
+        "original": "radius"
+      },
+      {
+        "text": "tecnia",
+        "meaning": "técnica, arte",
+        "origin": "griego",
+        "original": "τέχνη"
+      }
+    ]
+  },
+  {
+    "word": "radiofonía",
+    "definition": "Sonido relacionado con los rayos.",
+    "parts": [
+      {
+        "text": "radio",
+        "meaning": "rayo",
+        "origin": "latín",
+        "original": "radius"
+      },
+      {
+        "text": "fonía",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "radiólogo",
+    "definition": "Especialista en los rayos.",
+    "parts": [
+      {
+        "text": "radió",
+        "meaning": "rayo",
+        "origin": "latín",
+        "original": "radius"
+      },
+      {
+        "text": "logo",
+        "meaning": "especialista",
+        "origin": "griego",
+        "original": "λόγος"
+      }
+    ]
+  },
+  {
+    "word": "radiómetro",
+    "definition": "Medida de los rayos.",
+    "parts": [
+      {
+        "text": "radió",
+        "meaning": "rayo",
+        "origin": "latín",
+        "original": "radius"
+      },
+      {
+        "text": "metro",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μέτρον"
+      }
+    ]
+  },
+  {
+    "word": "sinfonía",
+    "definition": "Sonido relacionado con la unión.",
+    "parts": [
+      {
+        "text": "sin",
+        "meaning": "con, junto",
+        "origin": "griego",
+        "original": "σύν"
+      },
+      {
+        "text": "fonía",
+        "meaning": "sonido, voz",
+        "origin": "griego",
+        "original": "φωνή"
+      }
+    ]
+  },
+  {
+    "word": "somatología",
+    "definition": "Estudio de el cuerpo.",
+    "parts": [
+      {
+        "text": "somato",
+        "meaning": "cuerpo",
+        "origin": "griego",
+        "original": "σῶμα"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "taquigrafía",
+    "definition": "Representación o descripción de la rapidez.",
+    "parts": [
+      {
+        "text": "taqui",
+        "meaning": "rápido",
+        "origin": "griego",
+        "original": "ταχύς"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "taquimetría",
+    "definition": "Medición relacionada con la rapidez.",
+    "parts": [
+      {
+        "text": "taqui",
+        "meaning": "rápido",
+        "origin": "griego",
+        "original": "ταχύς"
+      },
+      {
+        "text": "metría",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μετρία"
+      }
+    ]
+  },
+  {
+    "word": "taquígrafo",
+    "definition": "Persona o instrumento que representa la rapidez.",
+    "parts": [
+      {
+        "text": "taquí",
+        "meaning": "rápido",
+        "origin": "griego",
+        "original": "ταχύς"
+      },
+      {
+        "text": "grafo",
+        "meaning": "escritor o trazador",
+        "origin": "griego",
+        "original": "γράφειν"
+      }
+    ]
+  },
+  {
+    "word": "taquímetro",
+    "definition": "Medida de la rapidez.",
+    "parts": [
+      {
+        "text": "taquí",
+        "meaning": "rápido",
+        "origin": "griego",
+        "original": "ταχύς"
+      },
+      {
+        "text": "metro",
+        "meaning": "medida",
+        "origin": "griego",
+        "original": "μέτρον"
+      }
+    ]
+  },
+  {
+    "word": "tecnología",
+    "definition": "Estudio de la técnica.",
+    "parts": [
+      {
+        "text": "tecno",
+        "meaning": "arte, técnica",
+        "origin": "griego",
+        "original": "τέχνη"
+      },
+      {
+        "text": "logía",
+        "meaning": "estudio, tratado",
+        "origin": "griego",
+        "original": "λογία"
+      }
+    ]
+  },
+  {
+    "word": "tecnografía",
+    "definition": "Representación o descripción de la técnica.",
+    "parts": [
+      {
+        "text": "tecno",
+        "meaning": "arte, técnica",
+        "origin": "griego",
+        "original": "τέχνη"
+      },
+      {
+        "text": "grafía",
+        "meaning": "escritura, representación",
+        "origin": "griego",
+        "original": "γραφία"
+      }
+    ]
+  },
+  {
+    "word": "tecnocracia",
+    "definition": "Sistema de poder relacionado con la técnica.",
+    "parts": [
+      {
+        "text": "tecno",
+        "meaning": "arte, técnica",
+        "origin": "griego",
+        "original": "τέχνη"
+      },
+      {
+        "text": "cracia",
+        "meaning": "poder, gobierno",
+        "origin": "griego",
+        "original": "κράτος"
+      }
+    ]
+  }
+];
+  words.push(...supplementalWords);
+
+  const meanings = [...new Set(words.flatMap(({ parts }) => parts.map(({ meaning }) => meaning)))];
+  const optionsFor = (meaning, offset) => {
+    const distractors = meanings.filter((item) => item !== meaning);
+    return [meaning, ...distractors.slice(offset % (distractors.length - 3), (offset % (distractors.length - 3)) + 3)];
+  };
+
+  return words.map((word, wordIndex) => ({
+    ...word,
+    parts: word.parts.map((part, partIndex) => ({ ...part, options: optionsFor(part.meaning, wordIndex * 2 + partIndex) }))
   }));
-  const accentingEndings = new Set(["grafo", "logo", "metro", "dromo", "geno", "filo", "fago", "fono", "foro"]);
-  const accentLastVowel = (value) => value.replace(/([aeiou])([^aeiou]*)$/u, (match, vowel, tail) => `${({ a: "á", e: "é", i: "í", o: "ó", u: "ú" })[vowel]}${tail}`);
-  const compoundChallenges = roots.flatMap(([form, text, meaning, original, subject, origin = "griego"], rootIndex) => endings.map(([endingForm, endingText, endingMeaning, endingOriginal, definitionFor], endingIndex) => {
-    const rawWord = `${form}${endingForm}`;
-    const displayForm = accentingEndings.has(endingForm) ? accentLastVowel(form) : form;
-    return {
-      word: `${displayForm}${endingText}`,
-      rawWord,
-      definition: definitionFor(subject),
-      parts: [
-        { text: displayForm, meaning, origin, original, options: optionsFor(meaning, rootMeanings, rootIndex + endingIndex) },
-        { text: endingText, meaning: endingMeaning, origin: "griego", original: endingOriginal, options: optionsFor(endingMeaning, endingMeanings, rootIndex * 2 + endingIndex) }
-      ]
-    };
-  })).filter(({ rawWord }) => isRaeVerified(rawWord) && !excluded.has(rawWord)).map(({ rawWord, ...challenge }) => challenge);
-  // El juego exige dos elementos etimológicos reales. Las voces simples se
-  // conservan como material editorial, pero no entran en el ciclo jugable.
-  return compoundChallenges;
 };
